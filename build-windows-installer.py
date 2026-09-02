@@ -10,13 +10,14 @@ from pathlib import Path
 
 import PyInstaller.__main__
 
-from ..__version__ import VERSION
+from __version__ import VERSION
 
-ROOT = Path(__file__).resolve().parent.parent
-PACKAGING = ROOT / "packaging"
-DIST = ROOT / "dist"
-WORK = ROOT / "build" / "pyinstaller"
-VENDOR = PACKAGING / "vendor"
+ROOT = Path(__file__).resolve().parent
+BUILDROOT = ROOT / "build"
+PYINSTALLER = BUILDROOT / "pyinstaller"
+DIST = PYINSTALLER / "dist"
+WORK = PYINSTALLER / "work"
+VENDOR = BUILDROOT / "vendor"
 
 APP_NAME = "UVR"
 ICON = ROOT / "gui_data" / "img" / "GUI-Icon.ico"
@@ -80,6 +81,8 @@ def add_runtime_resources(args: list[str]) -> None:
     # Add the GUI data, models, and lib_v5 directories to the PyInstaller build.
     for path in ("gui_data", "models", "lib_v5"):
         args.extend(["--add-data", data_arg(ROOT / path, path)])
+    args.extend(["--collect-submodules", "demucs"])
+    args.extend(["--collect-binaries", "samplerate"])
 
 
 def add_vendor_binaries(args: list[str]) -> None:
@@ -133,7 +136,7 @@ def run_inno_setup() -> None:
     if not iscc.is_file():
         raise SystemExit(f"Inno Setup 6 not found: {iscc}")
 
-    installer = PACKAGING / "installer.iss"
+    installer = ROOT / "installer.iss"
     if not installer.is_file():
         raise SystemExit(f"Missing installer definition: {installer}")
 

@@ -30,10 +30,10 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 
-OutputDir=..\dist-installer
+OutputDir=.\build\installer
 OutputBaseFilename=UVR_v{#AppVersion}_setup
 
-SetupIconFile=..\gui_data\img\GUI-Icon.ico
+SetupIconFile=.\gui_data\img\GUI-Icon.ico
 UninstallDisplayIcon={app}\{#AppExeName}
 
 Compression=lzma2/ultra64
@@ -43,7 +43,7 @@ WizardStyle=modern
 UsePreviousAppDir=yes
 
 [Files]
-Source: "..\dist\UVR\*"; \
+Source: ".\build\pyinstaller\dist\UVR\*"; \
   DestDir: "{app}"; \
   Flags: ignoreversion recursesubdirs createallsubdirs
 
