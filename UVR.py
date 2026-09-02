@@ -1,4 +1,6 @@
 # GUI modules
+from gui_data.dpi import configure_tk_scaling, scale_pixels
+
 import time
 #start_time = time.time()
 import audioread
@@ -94,12 +96,12 @@ def get_execution_time(function, name):
 PREVIOUS_PATCH_WIN = 'UVR_Patch_10_6_23_4_27'
 
 is_dnd_compatible = True
-banner_placement = -2
+banner_placement = scale_pixels(-2)
 
 if OPERATING_SYSTEM=="Darwin":
     OPEN_FILE_func = lambda input_string:subprocess.Popen(["open", input_string])
     dnd_path_check = MAC_DND_CHECK
-    banner_placement = -8
+    banner_placement = scale_pixels(-8)
     current_patch = PATCH_MAC
     is_windows = False
     is_macos = True
@@ -131,9 +133,7 @@ def right_click_release_linux(window, top_win=None):
 if not is_windows:
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
-else:
-    from ctypes import windll, wintypes
-    
+
 def close_process(q:queue.Queue):
     def close_splash():
         name = "UVR_Launcher.exe"
@@ -1287,7 +1287,9 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
     def __init__(self):
         #Run the __init__ method on the tk.Tk class
         super().__init__()
-        
+
+        configure_tk_scaling(self)
+
         self.set_app_font()
 
         style = ttk.Style(self)
@@ -1635,7 +1637,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         """Creates root window widgets"""
         
         self.title_Label = tk.Label(master=self, image=self.logo_img, compound=tk.TOP)
-        self.title_Label.place(x=-2, y=banner_placement)
+        self.title_Label.place(x=scale_pixels(-2), y=banner_placement)
 
         self.fill_filePaths_Frame()
         self.fill_options_Frame()
@@ -1663,7 +1665,7 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
 
          # Select Music Files Option
         self.console_Frame = tk.Frame(master=self, highlightbackground='#101012', highlightcolor='#101012', highlightthicknes=2)
-        self.console_Frame.place(x=15, y=self.IMAGE_HEIGHT + self.FILEPATHS_HEIGHT + self.OPTIONS_HEIGHT + self.CONVERSIONBUTTON_HEIGHT + self.PADDING + 5 *3, width=-30, height=self.COMMAND_HEIGHT+7,
+        self.console_Frame.place(x=X_CONSOLE_FRAME_1080P, y=self.IMAGE_HEIGHT + self.FILEPATHS_HEIGHT + self.OPTIONS_HEIGHT + self.CONVERSIONBUTTON_HEIGHT + self.PADDING + scale_pixels(15), width=WIDTH_CONSOLE_FRAME_1080P, height=HEIGHT_CONSOLE_FRAME_1080P,
                                 relx=0, rely=0, relwidth=1, relheight=0)
 
 
@@ -7247,13 +7249,6 @@ def extract_stems(audio_file_base, export_path):
     return list(set(filtered_lst))
 
 if __name__ == "__main__":
-
-    try:
-        windll.user32.SetThreadDpiAwarenessContext(wintypes.HANDLE(-1))
-    except Exception as e:
-        if OPERATING_SYSTEM == 'Windows':
-            print(e)
-    
     root = MainWindow()
     root.update_checkbox_text()
     root.is_root_defined_var.set(True)

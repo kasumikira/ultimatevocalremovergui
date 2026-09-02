@@ -3,6 +3,7 @@ import platform
 from screeninfo import get_monitors
 from PIL import Image
 from PIL import ImageTk
+from gui_data.dpi import UI_SCALE, scale_pixels, scale_size
 
 OPERATING_SYSTEM = platform.system()
 
@@ -13,14 +14,10 @@ def get_screen_height():
     return monitors[0].height, monitors[0].width
 
 def scale_values(value):
-    if not SCALE_WIN_SIZE == 1920:
-        ratio = SCALE_WIN_SIZE/1920  # Approx. 1.3333 for 2K
-        return value * ratio
-    else:
-        return value
+    return scale_pixels(value)
 
-SCREEN_HIGHT, SCREEN_WIDTH = get_screen_height()
-SCALE_WIN_SIZE = 1920
+SCREEN_HEIGHT, SCREEN_WIDTH = get_screen_height()
+LOGICAL_SCREEN_HEIGHT = SCREEN_HEIGHT / UI_SCALE
 
 SCREEN_SIZE_VALUES = {
         "normal": {
@@ -61,9 +58,9 @@ SCREEN_SIZE_VALUES = {
 }
 
 try:
-    if SCREEN_HIGHT >= 900:
+    if LOGICAL_SCREEN_HEIGHT >= 900:
         determined_size = SCREEN_SIZE_VALUES["normal"]
-    elif SCREEN_HIGHT <= 720:
+    elif LOGICAL_SCREEN_HEIGHT <= 720:
         determined_size = SCREEN_SIZE_VALUES["small"]
     else:
         determined_size = SCREEN_SIZE_VALUES["medium"]
@@ -106,7 +103,7 @@ class ImagePath():
         self.right_img = self.open_image(path=right_img_path, size=(image_scale_2, image_scale_2))   
         self.clear_img = self.open_image(path=clear_img_path, size=(image_scale_2, image_scale_2))
         self.copy_img = self.open_image(path=copy_img_path, size=(image_scale_2, image_scale_2))
-        self.credits_img = self.open_image(path=credits_path, size=determined_size["credits_img"])
+        self.credits_img = self.open_image(path=credits_path, size=scale_size(determined_size["credits_img"]))
 
     def open_image(self, path: str, size: tuple = None, keep_aspect: bool = True, rotate: int = 0) -> ImageTk.PhotoImage:
         """
@@ -369,3 +366,64 @@ LABEL_Y_OFFSET = MAIN_ROW_Y[0]
 ENTRY_X_OFFSET = SUB_ENT_ROW_X
 ENTRY_Y_OFFSET = MAIN_ROW_Y[1]
 OPTION_WIDTH = MAIN_ROW_ALIGN_WIDTH
+
+# Tk's place() coordinates are raw pixels and are not affected by ``tk
+# scaling``. Scale the complete fixed-pixel layout once, after all derived
+# values have been calculated. Character-based widget widths and point-based
+# font sizes above intentionally remain unchanged.
+_PIXEL_CONSTANTS = (
+    "IMAGE_HEIGHT", "FILEPATHS_HEIGHT", "OPTIONS_HEIGHT",
+    "CONVERSIONBUTTON_HEIGHT", "COMMAND_HEIGHT", "PROGRESS_HEIGHT",
+    "PADDING", "WIDTH", "MENU_PADDING_1", "MENU_PADDING_2",
+    "MENU_PADDING_3", "MENU_PADDING_4", "X_CONVERSION_BUTTON_1080P",
+    "WIDTH_CONVERSION_BUTTON_1080P", "HEIGHT_GENERIC_BUTTON_1080P",
+    "X_STOP_BUTTON_1080P", "X_SETTINGS_BUTTON_1080P",
+    "X_PROGRESSBAR_1080P", "WIDTH_PROGRESSBAR_1080P",
+    "X_CONSOLE_FRAME_1080P", "WIDTH_CONSOLE_FRAME_1080P", "HO_S",
+    "FILEPATHS_FRAME_X", "FILEPATHS_FRAME_Y", "FILEPATHS_FRAME_WIDTH",
+    "MUSICFILE_BUTTON_X", "MUSICFILE_BUTTON_Y", "MUSICFILE_BUTTON_WIDTH",
+    "MUSICFILE_BUTTON_HEIGHT", "MUSICFILE_ENTRY_X",
+    "MUSICFILE_ENTRY_WIDTH", "MUSICFILE_ENTRY_HEIGHT", "MUSICFILE_OPEN_X",
+    "MUSICFILE_OPEN_Y", "MUSICFILE_OPEN_WIDTH", "MUSICFILE_OPEN_HEIGHT",
+    "SAVETO_BUTTON_X", "SAVETO_BUTTON_Y", "SAVETO_BUTTON_WIDTH",
+    "SAVETO_BUTTON_HEIGHT", "SAVETO_ENTRY_X", "OPEN_BUTTON_X",
+    "OPEN_BUTTON_WIDTH", "SAVETO_ENTRY_WIDTH", "SAVETO_ENTRY_HEIGHT",
+    "SAVETO_OPEN_X", "SAVETO_OPEN_Y", "SAVETO_OPEN_WIDTH",
+    "SAVETO_OPEN_HEIGHT", "OPTIONS_FRAME_X", "OPTIONS_FRAME_Y",
+    "OPTIONS_FRAME_WIDTH", "FILEONE_LABEL_X", "FILEONE_LABEL_WIDTH",
+    "FILETWO_LABEL_X", "FILETWO_LABEL_WIDTH", "TIME_WINDOW_LABEL_X",
+    "TIME_WINDOW_LABEL_WIDTH", "INTRO_ANALYSIS_LABEL_X",
+    "INTRO_ANALYSIS_LABEL_WIDTH", "INTRO_ANALYSIS_OPTION_X",
+    "DB_ANALYSIS_LABEL_X", "DB_ANALYSIS_LABEL_WIDTH",
+    "DB_ANALYSIS_OPTION_X", "WAV_TYPE_SET_LABEL_X",
+    "WAV_TYPE_SET_LABEL_WIDTH", "ENTRY_WIDTH", "ENSEMBLE_LISTBOX_FRAME_X",
+    "ENSEMBLE_LISTBOX_FRAME_Y", "ENSEMBLE_LISTBOX_FRAME_WIDTH",
+    "ENSEMBLE_LISTBOX_FRAME_HEIGHT", "ENSEMBLE_LISTBOX_SCROLL_X",
+    "ENSEMBLE_LISTBOX_SCROLL_Y", "ENSEMBLE_LISTBOX_SCROLL_WIDTH",
+    "ENSEMBLE_LISTBOX_SCROLL_HEIGHT", "RADIOBUTTON_X_WAV",
+    "RADIOBUTTON_X_FLAC", "RADIOBUTTON_X_MP3", "RADIOBUTTON_Y",
+    "RADIOBUTTON_WIDTH", "RADIOBUTTON_HEIGHT", "MAIN_ROW_Y_1",
+    "MAIN_ROW_Y_2", "MAIN_ROW_X_1", "MAIN_ROW_X_2", "MAIN_ROW_2_Y_1",
+    "MAIN_ROW_2_Y_2", "MAIN_ROW_2_X_1", "MAIN_ROW_2_X_2",
+    "LOW_MENU_Y_1", "LOW_MENU_Y_2", "SUB_ENT_ROW_X", "MAIN_ROW_WIDTH",
+    "MAIN_ROW_ALIGN_WIDTH", "CHECK_BOX_Y", "CHECK_BOX_X",
+    "CHECK_BOX_WIDTH", "CHECK_BOX_HEIGHT", "LEFT_ROW_WIDTH",
+    "LABEL_HEIGHT", "OPTION_HEIGHT", "LABEL_X_OFFSET", "LABEL_WIDTH",
+    "ENTRY_OPEN_BUTT_WIDTH", "ENTRY_OPEN_BUTT_X_OFF",
+    "HEIGHT_CONSOLE_FRAME_1080P", "LOW_MENU_Y", "MAIN_ROW_Y", "MAIN_ROW_X",
+    "MAIN_ROW_2_Y", "MAIN_ROW_2_X", "LABEL_Y", "ENTRY_Y",
+    "BUTTON_Y_1080P", "HEIGHT_PROGRESSBAR_1080P",
+    "Y_OFFSET_PROGRESS_BAR_1080P", "Y_OFFSET_CONSOLE_FRAME_1080P",
+    "LABEL_Y_OFFSET", "ENTRY_X_OFFSET", "ENTRY_Y_OFFSET", "OPTION_WIDTH",
+)
+
+for _name in _PIXEL_CONSTANTS:
+    _value = globals()[_name]
+    globals()[_name] = (
+        tuple(scale_pixels(item) for item in _value)
+        if isinstance(_value, tuple)
+        else scale_pixels(_value)
+    )
+
+image_scale_1 = scale_pixels(image_scale_1)
+image_scale_2 = scale_pixels(image_scale_2)
