@@ -6,6 +6,7 @@
 
 #define AppName "Ultimate Vocal Remover"
 #define AppPublisher "Ultimate Vocal Remover, Inc."
+#define AppURL "https://github.com/Anjok07/ultimatevocalremovergui"
 #define AppExeName "UVR.exe"
 
 [Setup]
@@ -15,6 +16,9 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} version {#AppVersion}
 AppPublisher={#AppPublisher}
+AppPublisherURL={#AppURL}
+AppSupportURL={#AppURL}
+AppUpdatesURL={#AppURL}
 
 VersionInfoCompany={#AppPublisher}
 VersionInfoProductName={#AppName}
@@ -25,6 +29,7 @@ DefaultDirName={localappdata}\Programs\Ultimate Vocal Remover
 DefaultGroupName=Ultimate Vocal Remover
 
 DisableProgramGroupPage=yes
+DisableDirPage=auto
 PrivilegesRequired=lowest
 
 ArchitecturesAllowed=x64compatible
@@ -48,7 +53,15 @@ Source: ".\build\pyinstaller\dist\UVR\*"; \
   Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Dirs]
+; These writable runtime directories are present in the official Windows package.
+Name: "{app}\ensemble_temps"
+Name: "{app}\temp_sample_clips"
 Name: "{app}\tmp"
+Name: "{app}\gui_data\saved_ensembles"
+Name: "{app}\gui_data\saved_settings"
+Name: "{app}\models\Apollo_Models\model_data\model_alias_data"
+Name: "{app}\models\MDX_Net_Models\model_data\model_alias_data"
+Name: "{app}\models\VR_Models\model_data\model_alias_data"
 
 [Tasks]
 Name: "desktopicon"; \
