@@ -146,7 +146,6 @@ This process has been tested on a MacBook Pro 2021 (using M1) and a MacBook Air 
 
 </details>
 
-
 ### Linux Installation (Updated Instructions)
 
 <details id="LinuxInstall">

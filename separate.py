@@ -11,6 +11,14 @@ from lib_v5 import spec_utils
 from lib_v5.vr_network import nets
 from lib_v5.vr_network import nets_new
 from lib_v5.vr_network.model_param_init import ModelParameters
+from lib_v5.roformer.mel_band_roformer import MelBandRoformer
+from lib_v5.roformer.mel_band_roformer_new import MelBandRoformer as MelBandRoformerNew
+from lib_v5.roformer.bs_roformer import BSRoformer
+from lib_v5.roformer.bs_roformer_new import BSRoformer as BSRoformerNew
+from lib_v5.bandit.core.model import MultiMaskMultiSourceBandSplitRNNSimple
+from lib_v5.bandit_v2.bandit import Bandit
+from lib_v5.verify_gpu_availability import *
+from lib_v5.scnet.scnet import SCNet
 from pathlib import Path
 from gui_data.constants import *
 from gui_data.error_handling import *
@@ -23,24 +31,28 @@ import numpy as np
 import onnxruntime as ort
 import os
 import torch
+import torch.nn as nn
 import warnings
 import pydub
 import soundfile as sf
 import lib_v5.mdxnet as MdxnetSet
 import math
+import time
 #import random
 from onnx import load
 from onnx2pytorch import ConvertModel
-import gc
- 
+from ml_collections import ConfigDict
+
 if TYPE_CHECKING:
     from UVR import ModelData
 
+if is_import_direct_ml:
+    import torch_directml
+
+default_sr = 44100
+
 # if not is_macos:
 #     import torch_directml
-
-mps_available = torch.backends.mps.is_available() if is_macos else False
-cuda_available = torch.cuda.is_available()
 
 # def get_gpu_info():
 #     directml_device, directml_available = DIRECTML_DEVICE, False
@@ -54,13 +66,6 @@ cuda_available = torch.cuda.is_available()
 #     return directml_device, directml_available
 
 # DIRECTML_DEVICE, directml_available = get_gpu_info()
-
-def clear_gpu_cache():
-    gc.collect()
-    if is_macos:
-        torch.mps.empty_cache()
-    else:
-        torch.cuda.empty_cache()
 
 warnings.filterwarnings("ignore")
 cpu = torch.device('cpu')
@@ -128,9 +133,11 @@ class SeperateAttributes:
         self.primary_model_primary_stem = model_data.primary_model_primary_stem
         self.primary_stem_native = model_data.primary_stem_native
         self.primary_stem = model_data.primary_stem #
+        # print(self.primary_stem)
         self.secondary_stem = model_data.secondary_stem #
         self.is_invert_spec = model_data.is_invert_spec #
         self.is_deverb_vocals = model_data.is_deverb_vocals
+        self.is_target_instrument = model_data.is_target_instrument
         self.is_mixer_mode = model_data.is_mixer_mode #
         self.secondary_model_scale = model_data.secondary_model_scale #
         self.is_demucs_pre_proc_model_inst_mix = model_data.is_demucs_pre_proc_model_inst_mix #
@@ -166,10 +173,19 @@ class SeperateAttributes:
         self.is_save_vocal_only = model_data.is_save_vocal_only
         self.device = cpu
         self.run_type = ['CPUExecutionProvider']
-        self.is_opencl = False
+        self.is_using_directml = False
         self.device_set = model_data.device_set
-        self.is_use_opencl = model_data.is_use_opencl
-        
+        self.is_use_directml = model_data.is_use_directml
+        self.is_demud = model_data.is_demud
+        self.demudder_method = model_data.demudder_method
+        self.gen_model_config = model_data.mdx_c_configs
+        self.is_roformer = model_data.is_roformer
+        self.overwrite_protect_stamp = round(time.time())
+        self.mdx_model_type = model_data.mdx_model_type
+        self.is_force_mdx_c_seg_def = model_data.is_force_mdx_c_seg_def
+        self.is_use_torch_inference_mode = model_data.is_use_torch_inference_mode
+        self.is_calculate_comp = model_data.is_calculate_comp
+
         if self.is_inst_only_voc_splitter or self.is_sec_bv_rebalance:
             self.is_primary_stem_only = False
             self.is_secondary_stem_only = False
@@ -183,12 +199,13 @@ class SeperateAttributes:
             else:
                 device_prefix = None
                 if self.device_set != DEFAULT:
-                    device_prefix = CUDA_DEVICE#DIRECTML_DEVICE if self.is_use_opencl and directml_available else CUDA_DEVICE
+                    device_prefix = DIRECTML_DEVICE if self.is_use_directml and directml_available else CUDA_DEVICE
 
-                # if directml_available and self.is_use_opencl:
-                #     self.device = torch_directml.device() if not device_prefix else f'{device_prefix}:{self.device_set}'
-                #     self.is_other_gpu = True
-                if cuda_available:# and not self.is_use_opencl:
+                if directml_available and self.is_use_directml:
+                    self.device = torch_directml.device() if not device_prefix else f'{device_prefix}:{self.device_set}'
+                    self.is_other_gpu = True
+                    self.is_using_directml = True
+                elif cuda_available and not self.is_use_directml:
                     self.device = CUDA_DEVICE if not device_prefix else f'{device_prefix}:{self.device_set}'
                     self.run_type = ['CUDAExecutionProvider']
 
@@ -197,15 +214,15 @@ class SeperateAttributes:
             self.primary_model_name, self.primary_sources = self.cached_source_callback(MDX_ARCH_TYPE, model_name=self.model_basename)
             self.is_denoise = model_data.is_denoise#
             self.is_denoise_model = model_data.is_denoise_model#
-            self.is_mdx_c_seg_def = model_data.is_mdx_c_seg_def#
             self.mdx_batch_size = model_data.mdx_batch_size
             self.compensate = model_data.compensate
             self.mdx_segment_size = model_data.mdx_segment_size
             
             if self.is_mdx_c:
                 if not self.is_4_stem_ensemble:
-                    self.primary_stem = model_data.ensemble_primary_stem if process_data['is_ensemble_master'] else model_data.primary_stem
-                    self.secondary_stem = model_data.ensemble_secondary_stem if process_data['is_ensemble_master'] else model_data.secondary_stem
+                    if not self.is_target_instrument:
+                        self.primary_stem = model_data.ensemble_primary_stem if process_data['is_ensemble_master'] else model_data.primary_stem
+                        self.secondary_stem = model_data.ensemble_secondary_stem if process_data['is_ensemble_master'] else model_data.secondary_stem
             else:
                 self.dim_f, self.dim_t = model_data.mdx_dim_f_set, 2**model_data.mdx_dim_t_set
                 
@@ -226,6 +243,7 @@ class SeperateAttributes:
             self.demucs_version = model_data.demucs_version
             self.demucs_source_list = model_data.demucs_source_list
             self.demucs_source_map = model_data.demucs_source_map
+            self.is_custom_demucs = model_data.is_custom_demucs
             self.is_demucs_combine_stems = model_data.is_demucs_combine_stems
             self.demucs_stem_count = model_data.demucs_stem_count
             self.pre_proc_model = model_data.pre_proc_model
@@ -276,13 +294,10 @@ class SeperateAttributes:
                                    'aggr_correction': self.mp.param.get('aggr_correction')}
             
     def check_label_secondary_stem_runs(self):
-
-        # For ensemble master that's not a 4-stem ensemble, and not mdx_c
-        if self.process_data['is_ensemble_master'] and not self.is_4_stem_ensemble and not self.is_mdx_c:
+        if (self.process_data['is_ensemble_master'] and not self.is_4_stem_ensemble and not self.is_mdx_c) or (self.process_data['is_ensemble_master'] and self.is_target_instrument):
             if self.ensemble_primary_stem != self.primary_stem:
-                self.is_primary_stem_only, self.is_secondary_stem_only = self.is_secondary_stem_only, self.is_primary_stem_only
-            
-        # For secondary models
+                self.is_primary_stem_only, self.is_secondary_stem_only = self.is_secondary_stem_only, self.is_primary_stem_only   
+
         if self.is_pre_proc_model or self.is_secondary_model:
             self.is_primary_stem_only = False
             self.is_secondary_stem_only = False
@@ -313,6 +328,10 @@ class SeperateAttributes:
     def running_inference_progress_bar(self, length, is_match_mix=False):
         if not is_match_mix:
             self.progress_value += 1
+
+            # Avoid division by zero
+            if length <= 0:
+                length = 1
 
             if (0.8/length*self.progress_value) >= 0.8:
                 length = self.progress_value + 1
@@ -385,8 +404,12 @@ class SeperateAttributes:
     
     def write_audio(self, stem_path: str, stem_source, samplerate, stem_name=None):
         
-        def save_audio_file(path, source):
+        def save_audio_file(path: str, source):
             source = spec_utils.normalize(source, self.is_normalization)
+
+            if os.path.isfile(path) and is_not_ensemble:
+                path = path.replace(".wav", f"_{self.overwrite_protect_stamp}.wav")
+
             sf.write(path, source, samplerate, subtype=self.wav_type_set)
 
             if is_not_ensemble:
@@ -474,6 +497,9 @@ class SeperateMDX(SeperateAttributes):
     def seperate(self):
         samplerate = 44100
     
+        if self.mdx_segment_size == DEFAULT:
+            self.mdx_segment_size = self.dim_t
+    
         if self.primary_model_name == self.model_basename and isinstance(self.primary_sources, tuple):
             mix, source = self.primary_sources
             self.load_cached_sources()
@@ -486,7 +512,7 @@ class SeperateMDX(SeperateAttributes):
                 separator = MdxnetSet.ConvTDFNet(**model_params)
                 self.model_run = separator.load_from_checkpoint(self.model_path).to(self.device).eval()
             else:
-                if self.mdx_segment_size == self.dim_t and not self.is_other_gpu:
+                if self.mdx_segment_size == self.dim_t and not self.is_other_gpu and is_use_onnx_model:
                     ort_ = ort.InferenceSession(self.model_path, providers=self.run_type)
                     self.model_run = lambda spek:ort_.run(None, {'input': spek.cpu().numpy()})[0]
                 else:
@@ -498,11 +524,15 @@ class SeperateMDX(SeperateAttributes):
             
             source = self.demix(mix)
             
+            mdx_net_cut = True if self.primary_stem in MDX_NET_FREQ_CUT and self.is_match_frequency_pitch else False
+
+            if not isinstance(source, np.ndarray) and type(source) is dict:
+                self.secondary_source = self.demix(source[SECONDARY_STEM], is_match_mix=True).T if mdx_net_cut else source[SECONDARY_STEM]
+                source = source[PRIMARY_STEM]
+            
             if not self.is_vocal_split_model:
                 self.cache_source((mix, source))
             self.write_to_console(DONE, base_text='')            
-
-        mdx_net_cut = True if self.primary_stem in MDX_NET_FREQ_CUT and self.is_match_frequency_pitch else False
 
         if self.is_secondary_model_activated and self.secondary_model:
             self.secondary_source_primary, self.secondary_source_secondary = process_secondary_model(self.secondary_model, self.process_data, main_process_method=self.process_method, main_model_primary=self.primary_stem)
@@ -511,7 +541,7 @@ class SeperateMDX(SeperateAttributes):
             secondary_stem_path = os.path.join(self.export_path, f'{self.audio_file_base}_({self.secondary_stem}).wav')
             if not isinstance(self.secondary_source, np.ndarray):
                 raw_mix = self.demix(self.match_frequency_pitch(mix), is_match_mix=True) if mdx_net_cut else self.match_frequency_pitch(mix)
-                self.secondary_source = spec_utils.invert_stem(raw_mix, source) if self.is_invert_spec else mix.T-source.T
+                self.secondary_source = spec_utils.invert_stem(raw_mix, source) if self.is_invert_spec else raw_mix.T-source.T
             
             self.secondary_source_map = self.final_process(secondary_stem_path, self.secondary_source, self.secondary_source_secondary, self.secondary_stem, samplerate)
         
@@ -539,12 +569,16 @@ class SeperateMDX(SeperateAttributes):
         self.gen_size = self.chunk_size-2*self.trim
         self.stft = STFT(self.n_fft, self.hop, self.dim_f, self.device)
 
-    def demix(self, mix, is_match_mix=False):
+    def demix(self, mix, is_match_mix=False, is_demud=False):
         self.initialize_model_settings()
         
+        is_bare_stem = NO_STEM not in self.primary_stem_native and not self.primary_stem_native == INST_STEM
         org_mix = mix
         tar_waves_ = []
 
+        comp_valu = self.compensate
+        is_calculate_comp = False if is_match_mix or is_bare_stem else self.is_calculate_comp
+        chunk_add = 3 if self.demudder_method == DEMUD_COMBINE_METHODS else 2
         if is_match_mix:
             chunk_size = self.hop * (256-1)
             overlap = 0.02
@@ -566,6 +600,10 @@ class SeperateMDX(SeperateAttributes):
         total = 0
         total_chunks = (mixture.shape[-1] + step - 1) // step
 
+        if self.is_demud:
+            total_chunks = total_chunks * chunk_add
+            print('Total Chunks: ', total_chunks)
+
         for i in range(0, mixture.shape[-1], step):
             total += 1
             start = i
@@ -585,7 +623,7 @@ class SeperateMDX(SeperateAttributes):
                 mix_part_ = np.concatenate((mix_part_, np.zeros((2, pad_size), dtype='float32')), axis=-1)
 
             mix_part = torch.tensor([mix_part_], dtype=torch.float32).to(self.device)
-            mix_waves = mix_part.split(self.mdx_batch_size)
+            mix_waves = mix_part.split(1)
             
             with torch.no_grad():
                 for mix_wave in mix_waves:
@@ -612,7 +650,9 @@ class SeperateMDX(SeperateAttributes):
         if self.is_pitch_change and not is_match_mix:
             source = self.pitch_fix(source, sr_pitched, org_mix)
 
-        source = source if is_match_mix else source*self.compensate
+        if is_calculate_comp:
+            comp_valu = spec_utils.calculate_comp_level(spec_utils.match_array_shapes(source, org_mix), org_mix, comp_set=self.compensate)
+        source = source if is_match_mix else source*comp_valu
 
         if self.is_denoise_model and not is_match_mix:
             if NO_STEM in self.primary_stem_native or self.primary_stem_native == INST_STEM:
@@ -622,6 +662,39 @@ class SeperateMDX(SeperateAttributes):
             else:
                 source = vr_denoiser(source, self.device, model_path=self.DENOISER_MODEL)
 
+        if is_demud:
+            source = spec_utils.match_array_shapes(source, org_mix)
+            source = source if is_bare_stem else org_mix - source
+            return source
+
+        if self.is_demud and not is_match_mix and not self.is_vocal_split_model:
+            self.write_to_console("De-mudding Instrumental stem... ", base_text="")
+            inst_source = org_mix - spec_utils.match_array_shapes(source, org_mix) if is_bare_stem else source
+            inst_source = spec_utils.match_array_shapes(inst_source, org_mix)
+            bare_source = org_mix - inst_source
+            if self.demudder_method == DEMUD_COMBINE_METHODS:
+                phase_app_mix = spec_utils.demud_processor(
+                    org_mix, inst_source, demudder_method=DEMUD_PHASE_ROTATE
+                )
+                phase_app_inv_mix = spec_utils.demud_processor(
+                    org_mix, inst_source, demudder_method=DEMUD_PHASE_INVERT
+                )
+                phase_stem_remix = self.demix(phase_app_mix, is_demud=True)
+                phase_stem_inv = self.demix(phase_app_inv_mix, is_demud=True)
+                bare_stem_list = [bare_source, phase_stem_remix, phase_stem_inv]
+                phase_stem = spec_utils.average_audio(
+                    bare_stem_list, is_demud=True
+                )
+            else:
+                phase_app_mix = spec_utils.demud_processor(
+                    org_mix, inst_source, demudder_method=self.demudder_method
+                )
+                phase_stem = self.demix(phase_app_mix, is_demud=True)
+            source = phase_stem if is_bare_stem else org_mix - spec_utils.match_array_shapes(phase_stem, org_mix)
+            if is_bare_stem:
+                source = {PRIMARY_STEM: bare_source, SECONDARY_STEM: source}
+            else:
+                source = {PRIMARY_STEM: source, SECONDARY_STEM: bare_source}
         return source
 
     def run_model(self, mix, is_match_mix=False):
@@ -639,6 +712,7 @@ class SeperateMDX(SeperateAttributes):
 class SeperateMDXC(SeperateAttributes):        
 
     def seperate(self):
+        self.is_vocal_main_target = True if self.mdx_c_configs.training.target_instrument == VOCAL_STEM else False
         samplerate = 44100
         sources = None
 
@@ -654,15 +728,16 @@ class SeperateMDXC(SeperateAttributes):
                 self.cache_source((mix, sources))
             self.write_to_console(DONE, base_text='')
 
-        stem_list = [self.mdx_c_configs.training.target_instrument] if self.mdx_c_configs.training.target_instrument else [i for i in self.mdx_c_configs.training.instruments]
+        stem_list = [self.mdx_c_configs.training.target_instrument] if self.mdx_c_configs.training.target_instrument and not self.is_vocal_main_target else [i for i in self.mdx_c_configs.training.instruments]
 
         if self.is_secondary_model:
             if self.is_pre_proc_model:
                 self.mdxnet_stem_select = stem_list[0]
             else:
                 self.mdxnet_stem_select = self.main_model_primary_stem_4_stem if self.main_model_primary_stem_4_stem else self.primary_model_primary_stem
-            self.primary_stem = self.mdxnet_stem_select
-            self.secondary_stem = secondary_stem(self.mdxnet_stem_select)
+            if not self.is_vocal_split_model:
+                self.primary_stem = self.mdxnet_stem_select
+                self.secondary_stem = secondary_stem(self.mdxnet_stem_select)
             self.is_primary_stem_only, self.is_secondary_stem_only = False, False
 
         is_all_stems = self.mdxnet_stem_select == ALL_STEMS
@@ -672,6 +747,7 @@ class SeperateMDXC(SeperateAttributes):
         is_ensemble_4_stem = self.is_4_stem_ensemble and is_not_single_stem
 
         if (is_all_stems and is_not_ensemble_master and is_not_single_stem and is_not_secondary_model) or is_ensemble_4_stem and not self.is_pre_proc_model:
+            print('going through stem list')
             for stem in stem_list:
                 primary_stem_path = os.path.join(self.export_path, f'{self.audio_file_base}_({stem}).wav')
                 self.primary_source = sources[stem].T
@@ -680,10 +756,25 @@ class SeperateMDXC(SeperateAttributes):
                 if stem == VOCAL_STEM and not self.is_sec_bv_rebalance:
                     self.process_vocal_split_chain({VOCAL_STEM:stem})
         else:
+            is_temp_stem_swap = False
             if len(stem_list) == 1:
                 source_primary = sources  
+            elif self.is_multi_stem_ensemble or len(stem_list) == 2:
+                if self.is_secondary_model and self.mdxnet_stem_select in stem_list:
+                    source_primary = sources[self.mdxnet_stem_select]
+                else:
+                    source_primary = sources[stem_list[0]]
+            elif self.is_secondary_model and len(stem_list) > 2:
+                secondary_stem_ = secondary_stem(self.mdxnet_stem_select)
+                if secondary_stem_ in stem_list:
+                    source_primary = sources[secondary_stem_]
+                    self.primary_stem = secondary_stem_
+                    is_temp_stem_swap = True
+                else:
+                    source_primary = sources[self.mdxnet_stem_select]
             else:
-                source_primary = sources[stem_list[0]] if self.is_multi_stem_ensemble and len(stem_list) == 2 else sources[self.mdxnet_stem_select]
+                source_primary = sources[self.mdxnet_stem_select]
+            
             if self.is_secondary_model_activated and self.secondary_model:
                 self.secondary_source_primary, self.secondary_source_secondary = process_secondary_model(self.secondary_model, 
                                                                                                          self.process_data, 
@@ -693,8 +784,11 @@ class SeperateMDXC(SeperateAttributes):
             if not self.is_primary_stem_only:
                 secondary_stem_path = os.path.join(self.export_path, f'{self.audio_file_base}_({self.secondary_stem}).wav')
                 if not isinstance(self.secondary_source, np.ndarray):
-                    
-                    if self.is_mdx_combine_stems and len(stem_list) >= 2:
+                    if isinstance(sources, dict) and self.secondary_stem not in sources:
+                        is_mdx_combine_stems = False
+                    else:
+                        is_mdx_combine_stems = self.is_mdx_combine_stems
+                    if is_mdx_combine_stems and len(stem_list) >= 2:
                         if len(stem_list) == 2:
                             secondary_source = sources[self.secondary_stem]
                         else:
@@ -704,6 +798,8 @@ class SeperateMDXC(SeperateAttributes):
                             for v in sources.values():
                                 secondary_source += v
                                 
+                        if is_temp_stem_swap:
+                            self.primary_stem, self.secondary_stem = secondary_stem(self.primary_model_primary_stem), self.primary_model_primary_stem
                         self.secondary_source = secondary_source.T 
                     else:
                         self.secondary_source, raw_mix = source_primary, self.match_frequency_pitch(mix)
@@ -731,67 +827,206 @@ class SeperateMDXC(SeperateAttributes):
         if self.is_secondary_model or self.is_pre_proc_model:
             return secondary_sources
 
-    def demix(self, mix):
+    def _getWindowingArray(self, window_size: int, fade_size: int, device) -> torch.Tensor:
+        fadein = torch.linspace(0, 1, fade_size).to(device)
+        fadeout = torch.linspace(1, 0, fade_size).to(device)
+        window = torch.ones(window_size).to(device)
+        window[-fade_size:] = fadeout
+        window[:fade_size] = fadein
+        return window
+
+    def overlap_add(self, result, x, l, j, start, window):
+        if self.device == 'mps' or self.is_other_gpu:
+            x = x.to(self.device)
+        result[..., start:start + l] += x[j, ..., :l] * window[..., :l]
+        return result
+
+    def find_hop_size(self, config_):
+        def _find_hop(config):
+            if isinstance(config, dict) or isinstance(config, ConfigDict):
+                for key, value in config.items():
+                    if key in ('hop_size', 'hop_length'):
+                        return value
+                    elif isinstance(value, (dict, ConfigDict)):
+                        result = _find_hop(value)
+                        if result is not None:
+                            return result
+            elif hasattr(config, '__dict__'):
+                return _find_hop(config.__dict__)
+
+        set_chunk = config_.audio.chunk_size
+        dim_t_c = getattr(config_.inference, 'dim_t', 256) - 1
+        hop_size = _find_hop(config_)
+        if hop_size and hop_size * dim_t_c == set_chunk:
+            return hop_size
+        else:
+            return set_chunk // dim_t_c
+
+    def demix(self, mix, is_demud=False):
         sr_pitched = 441000
         org_mix = mix
+        chunk_add = 3 if self.demudder_method == DEMUD_COMBINE_METHODS else 2
         if self.is_pitch_change:
             mix, sr_pitched = spec_utils.change_pitch_semitones(mix, 44100, semitone_shift=-self.semitone_shift)
 
-        model = TFC_TDF_net(self.mdx_c_configs, device=self.device)
-        model.load_state_dict(torch.load(self.model_path, map_location=cpu))
-        model.to(self.device).eval()
-        mix = torch.tensor(mix, dtype=torch.float32)
+        device = self.device
 
-        try:
-            S = model.num_target_instruments
-        except Exception as e:
-            S = model.module.num_target_instruments
+        # Determine the model type based on the configuration and instantiate it
+        if self.mdx_model_type == BSRO_MODEL_TYPE:
+            model = BSRoformer(**self.gen_model_config.model)
+        elif self.mdx_model_type == BSRO_NEW_MODEL_TYPE or self.mdx_model_type == BSRO_NEW_MODEL_TYPE_:
+            model = BSRoformerNew(**self.gen_model_config.model)
+        elif self.mdx_model_type == MELRO_MODEL_TYPE:
+            model = MelBandRoformer(**self.gen_model_config.model)
+        elif self.mdx_model_type == MELRO_NEW_MODEL_TYPE or self.mdx_model_type == MELRO_NEW_MODEL_TYPE_:
+            model = MelBandRoformerNew(**self.gen_model_config.model)
+        elif self.mdx_model_type == SCNET_MODEL_TYPE:
+            model = SCNet(**self.gen_model_config.model)
+        elif self.mdx_model_type == BANDIT_MODEL_TYPE:
+            model = MultiMaskMultiSourceBandSplitRNNSimple(**self.gen_model_config.model)
+        elif self.mdx_model_type == BANDIT_2_MODEL_TYPE or self.mdx_model_type == BANDIT_2_MODEL_TYPE_:
+            model = Bandit(**self.gen_model_config.kwargs)
+        elif self.is_roformer:
+            if 'num_bands' in self.gen_model_config.model:
+                model = MelBandRoformer(**self.gen_model_config.model)
+            elif 'freqs_per_bands' in self.gen_model_config.model:
+                model = BSRoformer(**self.gen_model_config.model)
+            else:
+                raise ValueError('Unknown model type in the configuration.')
+        else:
+            model = TFC_TDF_net(self.mdx_c_configs, device=self.device)
 
-        mdx_segment_size = self.mdx_c_configs.inference.dim_t if self.is_mdx_c_seg_def else self.mdx_segment_size
-        
-        batch_size = self.mdx_batch_size
-        chunk_size = self.mdx_c_configs.audio.hop_length * (mdx_segment_size - 1)
-        overlap = self.overlap_mdx23
+        # Load model checkpoint
+        checkpoint = torch.load(self.model_path, map_location='cpu')
+        model = model if not isinstance(model, torch.nn.DataParallel) else model.module
+        model.load_state_dict(checkpoint)
+        model.to(device).eval()
+        mix = torch.tensor(mix, dtype=torch.float32, device=self.device)
+        hop_size = self.find_hop_size(self.gen_model_config)
+        is_seg_def = True if self.mdx_segment_size == DEFAULT else False
 
-        hop_size = chunk_size // overlap
-        mix_shape = mix.shape[1]
-        pad_size = hop_size - (mix_shape - chunk_size) % hop_size
-        mix = torch.cat([torch.zeros(2, chunk_size - hop_size), mix, torch.zeros(2, pad_size + chunk_size - hop_size)], 1)
+        if is_seg_def or self.is_force_mdx_c_seg_def:
+            chunk_size = self.gen_model_config.audio.chunk_size
+        else:
+            chunk_size = hop_size * (self.mdx_segment_size - 1)
 
-        chunks = mix.unfold(1, chunk_size, hop_size).transpose(0, 1)
-        batches = [chunks[i : i + batch_size] for i in range(0, len(chunks), batch_size)]
-        
-        X = torch.zeros(S, *mix.shape) if S > 1 else torch.zeros_like(mix)
-        X = X.to(self.device)
+        is_target_inst = False
+        num_instruments = 1 if self.gen_model_config.training.target_instrument else len(self.gen_model_config.training.instruments)
+        num_overlap = self.overlap_mdx23
+        target_stem = [self.mdx_c_configs.training.target_instrument] if self.mdx_c_configs.training.target_instrument else None
 
-        with torch.no_grad():
-            cnt = 0
-            for batch in batches:
-                self.running_inference_progress_bar(len(batches))
-                x = model(batch.to(self.device))
+        if num_instruments == 1:
+            is_target_inst = True if self.gen_model_config.training.target_instrument == INST_STEM else False
+
+        step = int(chunk_size // num_overlap)
+        fade_size = chunk_size // 10
+        border = chunk_size - step
+        batch_size = 1
+        length_init = mix.shape[-1]
+        windowing_array = self._getWindowingArray(chunk_size, fade_size, device)
+
+        if length_init > 2 * border and border:
+            mix = nn.functional.pad(mix, (border, border), mode='reflect')
+
+        batch_len = int(mix.shape[1] / step)
+        if self.is_demud:
+            batch_len = batch_len * chunk_add
+
+        self.is_use_torch_inference_mode = False if self.is_using_directml else self.is_use_torch_inference_mode
+
+        with torch.inference_mode() if self.is_use_torch_inference_mode else torch.no_grad():
+            req_shape = (num_instruments,) + mix.shape
+            result = torch.zeros(req_shape, dtype=torch.float32, device=device)
+            counter = torch.zeros(req_shape, dtype=torch.float32, device=device)
+            batch_data = []
+            batch_locations = []
+
+            i = 0
+
+            while i < mix.shape[1]:
+                part = mix[:, i:i + chunk_size].to(device)
+                length = part.shape[-1]
+                if length > chunk_size // 2:
+                    pad_mode = 'reflect'
+                else:
+                    pad_mode = 'constant'
+                part = nn.functional.pad(part, (0, chunk_size - length), mode=pad_mode, value=0)
                 
-                for w in x:
-                    X[..., cnt * hop_size : cnt * hop_size + chunk_size] += w
-                    cnt += 1
+                batch_data.append(part)
+                batch_locations.append((i, length))
+                i += step
 
-        estimated_sources = X[..., chunk_size - hop_size:-(pad_size + chunk_size - hop_size)] / overlap
-        del X
+                # Process in batches
+                if len(batch_data) >= batch_size or (i >= mix.shape[1]):
+                    arr = torch.stack(batch_data, dim=0)
+                    x = model(arr)
+                    window = windowing_array.clone()
+                    if i - step == 0:
+                        window[:fade_size] = 1
+                    elif i >= mix.shape[1]:
+                        window[-fade_size:] = 1
+
+                    for j, (start, seg_len) in enumerate(batch_locations):
+                        self.running_inference_progress_bar(batch_len)
+                        min_length = min(result[..., start:start + seg_len].shape[-1], x[j, ..., :seg_len].shape[-1], window[..., :seg_len].shape[-1])
+                        result = self.overlap_add(result, x, min_length, j, start, window)
+                        counter[..., start:start + seg_len] += window[..., :seg_len]
+
+                    batch_data = []
+                    batch_locations = []
+
+            # Normalize by the overlap counter and remove padding
+            estimated_sources = result / counter.clamp(min=1e-10)
+
+            if length_init > 2 * (chunk_size - step) and chunk_size - step > 0:
+                estimated_sources = estimated_sources[..., chunk_size - step:-(chunk_size - step)]
+
+            estimated_sources = estimated_sources.cpu().numpy()
+
         pitch_fix = lambda s:self.pitch_fix(s, sr_pitched, org_mix)
 
-        if S > 1:
-            sources = {k: pitch_fix(v) if self.is_pitch_change else v for k, v in zip(self.mdx_c_configs.training.instruments, estimated_sources.cpu().detach().numpy())}
-            del estimated_sources
-            if self.is_denoise_model:
-                if VOCAL_STEM in sources.keys() and INST_STEM in sources.keys():
-                    sources[VOCAL_STEM] = vr_denoiser(sources[VOCAL_STEM], self.device, model_path=self.DENOISER_MODEL)
-                    if sources[VOCAL_STEM].shape[1] != org_mix.shape[1]:
-                        sources[VOCAL_STEM] = spec_utils.match_array_shapes(sources[VOCAL_STEM], org_mix)
-                    sources[INST_STEM] = org_mix - sources[VOCAL_STEM]
-                            
+        if num_instruments > 1 or self.is_vocal_main_target or is_target_inst:
+            sources = {k: pitch_fix(v) if self.is_pitch_change else v for k, v in zip(target_stem if target_stem else self.mdx_c_configs.training.instruments, estimated_sources)}
+            if self.is_vocal_main_target:
+                if sources[VOCAL_STEM].shape[1] != org_mix.shape[1]:
+                    sources[VOCAL_STEM] = spec_utils.match_array_shapes(sources[VOCAL_STEM], org_mix)
+                sources[INST_STEM] = org_mix - sources[VOCAL_STEM]
+            if is_target_inst:
+                if sources[INST_STEM].shape[1] != org_mix.shape[1]:
+                    sources[INST_STEM] = spec_utils.match_array_shapes(sources[INST_STEM], org_mix)
+                sources[VOCAL_STEM] = org_mix - sources[INST_STEM]
+            if self.is_denoise_model and VOCAL_STEM in sources.keys() and INST_STEM in sources.keys():
+                sources[VOCAL_STEM] = vr_denoiser(sources[VOCAL_STEM], self.device, model_path=self.DENOISER_MODEL)
+                if sources[VOCAL_STEM].shape[1] != org_mix.shape[1]:
+                    sources[VOCAL_STEM] = spec_utils.match_array_shapes(sources[VOCAL_STEM], org_mix)
+                sources[INST_STEM] = org_mix - sources[VOCAL_STEM]
+            if is_demud:
+                return sources[VOCAL_STEM]
+            elif VOCAL_STEM in sources.keys() and INST_STEM in sources.keys() and self.is_demud:
+                self.write_to_console('De-mudding Instrumental stem... ', base_text='')
+                inst_source = spec_utils.match_array_shapes(sources[INST_STEM], org_mix)
+                if self.demudder_method == DEMUD_COMBINE_METHODS:
+                    bare_source = org_mix - inst_source
+                    phase_app_mix = spec_utils.demud_processor(org_mix, inst_source, demudder_method=DEMUD_PHASE_ROTATE)
+                    phase_app_inv_mix = spec_utils.demud_processor(org_mix, inst_source, demudder_method=DEMUD_PHASE_INVERT)
+                    phase_stem_remix = self.demix(phase_app_mix, is_demud=True)
+                    phase_stem_inv = self.demix(phase_app_inv_mix, is_demud=True)
+                    bare_stem_list = [bare_source, phase_stem_remix, phase_stem_inv]
+                    phase_stem = spec_utils.average_audio(bare_stem_list, is_demud=True)
+                else:
+                    phase_app_mix = spec_utils.demud_processor(org_mix, inst_source, demudder_method=self.demudder_method)
+                    phase_stem = self.demix(phase_app_mix, is_demud=True)
+                try:
+                    sf.write(os.path.join('demud_tests', f'{self.audio_file_base}_(phased_mix).wav'), phase_app_mix.T, 44100, subtype=self.wav_type_set)
+                except:
+                    print('Failed to save inverted file')
+                sources[INST_STEM] = org_mix - spec_utils.match_array_shapes(phase_stem, org_mix)
+            if is_target_inst and VOCAL_STEM in sources.keys():
+                sources = sources[INST_STEM]
             return sources
         else:
-            est_s = estimated_sources.cpu().detach().numpy()
-            del estimated_sources
+            sources = {k: v for k, v in zip([self.mdx_c_configs.training.target_instrument], estimated_sources)}
+            est_s = sources[self.mdx_c_configs.training.target_instrument]
             return pitch_fix(est_s) if self.is_pitch_change else est_s
 
 class SeperateDemucs(SeperateAttributes):
@@ -830,6 +1065,9 @@ class SeperateDemucs(SeperateAttributes):
                 self.demucs.load_state_dict(torch.load(self.model_path))
                 self.demucs.eval()
             else:  
+                print('demucs_source_list', self.demucs_source_list)
+                print('model_path', self.model_path)
+                print('segment', self.segment)
                 self.demucs = HDemucs(sources=self.demucs_source_list)
                 self.demucs = _gm(name=os.path.splitext(os.path.basename(self.model_path))[0], 
                                   repo=Path(os.path.dirname(self.model_path)))
@@ -867,20 +1105,21 @@ class SeperateDemucs(SeperateAttributes):
 
         if isinstance(source, np.ndarray):
             
-            if len(source) == 2:
-                self.demucs_source_map = DEMUCS_2_SOURCE_MAPPER
-            else:
-                self.demucs_source_map = DEMUCS_6_SOURCE_MAPPER if len(source) == 6 else DEMUCS_4_SOURCE_MAPPER
+            if not self.is_custom_demucs:
+                if len(source) == 2:
+                    self.demucs_source_map = DEMUCS_2_SOURCE_MAPPER
+                else:
+                    self.demucs_source_map = DEMUCS_6_SOURCE_MAPPER if len(source) == 6 else DEMUCS_4_SOURCE_MAPPER
 
-                if len(source) == 6 and self.process_data['is_ensemble_master'] or len(source) == 6 and self.is_secondary_model:
-                    is_no_piano_guitar = True
-                    six_stem_other_source = list(source)
-                    six_stem_other_source = [i for n, i in enumerate(source) if n in [self.demucs_source_map[OTHER_STEM], self.demucs_source_map[GUITAR_STEM], self.demucs_source_map[PIANO_STEM]]]
-                    other_source = np.zeros_like(six_stem_other_source[0])
-                    for i in six_stem_other_source:
-                        other_source += i
-                    source_reshape = spec_utils.reshape_sources(source[self.demucs_source_map[OTHER_STEM]], other_source)
-                    source[self.demucs_source_map[OTHER_STEM]] = source_reshape
+                    if len(source) == 6 and self.process_data['is_ensemble_master'] or len(source) == 6 and self.is_secondary_model:
+                        is_no_piano_guitar = True
+                        six_stem_other_source = list(source)
+                        six_stem_other_source = [i for n, i in enumerate(source) if n in [self.demucs_source_map[OTHER_STEM], self.demucs_source_map[GUITAR_STEM], self.demucs_source_map[PIANO_STEM]]]
+                        other_source = np.zeros_like(six_stem_other_source[0])
+                        for i in six_stem_other_source:
+                            other_source += i
+                        source_reshape = spec_utils.reshape_sources(source[self.demucs_source_map[OTHER_STEM]], other_source)
+                        source[self.demucs_source_map[OTHER_STEM]] = source_reshape
                     
         if not self.is_vocal_split_model:
             self.cache_source(source)
@@ -998,6 +1237,9 @@ class SeperateDemucs(SeperateAttributes):
                                             self.overlap,
                                             set_progress_bar=self.set_progress_bar)
             else:
+                print('self.shifts', self.shifts)
+                print('is_split_mode', self.is_split_mode)
+                print('overlap', self.overlap)
                 sources = apply_model(self.demucs, 
                                         mix_infer[None], 
                                         self.shifts,

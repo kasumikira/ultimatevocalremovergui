@@ -6,8 +6,9 @@ import math
 import platform
 import traceback
 from . import pyrb
-from scipy.signal import correlate, hilbert
+from scipy.signal import correlate, hilbert, butter, lfilter
 import io
+import os
 
 OPERATING_SYSTEM = platform.system()
 SYSTEM_ARCH = platform.platform()
@@ -23,6 +24,11 @@ MED_P = "Shifts: Medium",
 HIGH_P = "Shifts: High",
 VHIGH_P = "Shifts: Very High"
 MAXIMUM_P = "Shifts: Maximum"
+
+DEMUD_ADJUST_CLIP = "Adjust Clips"
+DEMUD_PHASE_ROTATE = "Phase Rotate"
+DEMUD_PHASE_INVERT = "Phase Remix"
+DEMUD_PHASE_SWAP = "Swap Phase"
 
 progress_value = 0
 last_update_time = 0
@@ -541,7 +547,9 @@ def ensembling(a, inputs, is_wavs=False):
         if MIN_SPEC == a:
             input = np.where(np.abs(inputs[i]) <= np.abs(input), inputs[i], input)
         if MAX_SPEC == a:
-            input = np.where(np.abs(inputs[i]) >= np.abs(input), inputs[i], input)  
+            #input = np.array(np.where(np.greater_equal(np.abs(inputs[i]), np.abs(input)), inputs[i], input), dtype=object)
+            input = np.where(np.abs(inputs[i]) >= np.abs(input), inputs[i], input)
+            #max_spec = np.array([np.where(np.greater_equal(np.abs(inputs[i]), np.abs(input)), s, specs[0]) for s in specs[1:]], dtype=object)[-1]
 
     #linear_ensemble
     #input = ensemble_wav(inputs, split_size=1)
@@ -589,7 +597,24 @@ def ensemble_inputs(audio_input, algorithm, is_normalization, wav_type_set, save
 
     sf.write(save_path, normalize(output.T, is_normalization), samplerate, subtype=wav_type_set)
 
+def reshape_if_needed(array: np.ndarray):
+    """
+    Check the shape of the array and reshape it if necessary.
+
+    Parameters:
+    array (np.ndarray): The input array to check and reshape.
+
+    Returns:
+    np.ndarray: The reshaped array if needed, otherwise the original array.
+    """
+    array = array.T
+    if array.ndim == 3 and array.shape[2] == 1:
+        return np.squeeze(array, axis=2).T
+    return array.T
+
 def to_shape(x, target_shape):
+    print('x.shape: ', x.shape)
+    print('target_shape: ', target_shape)
     padding_list = []
     for x_dim, target_dim in zip(x.shape, target_shape):
         pad_value = (target_dim - x_dim)
@@ -748,25 +773,28 @@ def augment_audio(export_path, audio_file, rate, is_normalization, wav_type_set,
     sf.write(export_path, normalize(wav_mix.T, is_normalization), sr, subtype=wav_type_set)
     save_format(export_path)
     
-def average_audio(audio):
-    
-    waves = []
-    wave_shapes = []
-    final_waves = []
+def average_audio(audio, is_demud=False):
+    if not is_demud:
+        waves = []
+        wave_shapes = []
+        final_waves = []
 
-    for i in range(len(audio)):
-        wave = librosa.load(audio[i], sr=44100, mono=False)
-        waves.append(wave[0])
-        wave_shapes.append(wave[0].shape[1])
+        for i in range(len(audio)):
+            wave = librosa.load(audio[i], sr=44100, mono=False)
+            waves.append(wave[0])
+            wave_shapes.append(wave[0].shape[1])
 
-    wave_shapes_index = wave_shapes.index(max(wave_shapes))
-    target_shape = waves[wave_shapes_index]
-    waves.pop(wave_shapes_index)
-    final_waves.append(target_shape)
+        wave_shapes_index = wave_shapes.index(max(wave_shapes))
+        target_shape = waves[wave_shapes_index]
+        waves.pop(wave_shapes_index)
+        final_waves.append(target_shape)
 
-    for n_array in waves:
-        wav_target = to_shape(n_array, target_shape.shape)
-        final_waves.append(wav_target)
+        for n_array in waves:
+            wav_target = to_shape(n_array, target_shape.shape)
+            final_waves.append(wav_target)
+
+    else:
+        final_waves = audio
 
     waves = sum(final_waves)
     waves = waves/len(audio)
@@ -1239,3 +1267,204 @@ def rerun_mp3(audio_file):
         track_length = int(f.duration)
 
     return track_length
+
+def frequency_blend_phases(phase1, phase2, freq_bins, low_cutoff=500, high_cutoff=5000):
+    """Blend two phase arrays with different weights depending on frequency."""
+    blended_phase = np.zeros_like(phase1)
+    for i, freq in enumerate(freq_bins):
+        if freq < low_cutoff:
+            blend_factor = 0.1
+        elif freq > high_cutoff:
+            blend_factor = 0.9
+        else:
+            blend_factor = 0.1 + 0.8 * ((freq - low_cutoff) / (high_cutoff - low_cutoff))
+        blended_phase[i, :] = (1 - blend_factor) * phase1[i, :] + blend_factor * phase2[i, :]
+    return blended_phase
+
+def transfer_magnitude_phase(source_file, target_file, transfer_magnitude=False, transfer_phase=True, low_cutoff=500, high_cutoff=5000):
+    source_audio, source_sr = librosa.load(source_file, sr=None, mono=False)
+    target_audio, target_sr = librosa.load(target_file, sr=None, mono=False)
+    source_audio = match_array_shapes(source_audio, target_audio, is_swap=False)
+    if source_sr != target_sr:
+        raise ValueError("Sample rates of source and target audio files must match.")
+
+    source_stft_left = librosa.stft(source_audio[0, :])
+    source_stft_right = librosa.stft(source_audio[1, :])
+    target_stft_left = librosa.stft(target_audio[0, :])
+    target_stft_right = librosa.stft(target_audio[1, :])
+
+    source_magnitude_left, source_phase_left = np.abs(source_stft_left), np.angle(source_stft_left)
+    source_magnitude_right, source_phase_right = np.abs(source_stft_right), np.angle(source_stft_right)
+    target_magnitude_left, target_phase_left = np.abs(target_stft_left), np.angle(target_stft_left)
+    target_magnitude_right, target_phase_right = np.abs(target_stft_right), np.angle(target_stft_right)
+    freqs = librosa.fft_frequencies(sr=source_sr, n_fft=source_stft_left.shape[0] * 2 - 1)
+    modified_stft_left = target_stft_left.copy()
+    modified_stft_right = target_stft_right.copy()
+
+    if transfer_magnitude:
+        modified_stft_left = source_magnitude_left * np.exp(1j * np.angle(modified_stft_left))
+        modified_stft_right = source_magnitude_right * np.exp(1j * np.angle(modified_stft_right))
+    if transfer_phase:
+        blended_phase_left = frequency_blend_phases(target_phase_left, source_phase_left, freqs, low_cutoff, high_cutoff)
+        blended_phase_right = frequency_blend_phases(target_phase_right, source_phase_right, freqs, low_cutoff, high_cutoff)
+        modified_stft_left = np.abs(modified_stft_left) * np.exp(1j * blended_phase_left)
+        modified_stft_right = np.abs(modified_stft_right) * np.exp(1j * blended_phase_right)
+
+    modified_audio_left = librosa.istft(modified_stft_left)
+    modified_audio_right = librosa.istft(modified_stft_right)
+    modified_audio = np.vstack((modified_audio_left, modified_audio_right))
+    return modified_audio, target_sr
+
+def rotate_phase(signal, degree):
+    analytic_signal = hilbert(signal)
+    radians = np.deg2rad(degree)
+    rotated_signal = np.abs(analytic_signal) * np.exp(1j * (np.angle(analytic_signal) + radians))
+    return rotated_signal
+
+def apply_phase_change(mix: np.ndarray, inst: np.ndarray, left_degree, right_degree, is_swap=False):
+    if is_swap:
+        mix, inst = mix.T, inst.T
+    left_channel, right_channel = inst[0], inst[1]
+    left_rotated = rotate_phase(left_channel, left_degree)
+    right_rotated = rotate_phase(right_channel, right_degree)
+    rotated_stereo = np.array([right_rotated, left_rotated])
+    phased_mix = mix + rotated_stereo
+    if is_swap:
+        phased_mix = phased_mix.T
+    return phased_mix.real
+
+def stems_invert(mix: np.ndarray, inst: np.ndarray, is_swap):
+    if is_swap:
+        mix, inst = mix.T, inst.T
+    voc_stem = mix - inst
+    phased_mix = inst - voc_stem
+    phased_mix = -phased_mix
+    if is_swap:
+        phased_mix = phased_mix.T
+    return phased_mix
+
+def demud_processor(mix: np.ndarray, inst: np.ndarray, demudder_method=DEMUD_PHASE_ROTATE, left_degree=-120, right_degree=120, is_swap=True):
+    if is_swap:
+        mix, inst = mix.T, inst.T
+    if demudder_method == DEMUD_PHASE_ROTATE:
+        print("applying phase change")
+        phased_result = apply_phase_change(mix, inst, left_degree, right_degree, is_swap)
+    if demudder_method == DEMUD_PHASE_INVERT:
+        print("applying vocal invert")
+        phased_result = stems_invert(mix, inst, is_swap)
+    if is_swap:
+        return phased_result.T
+    return phased_result
+
+def swap_phase_stereo(org_voc: np.ndarray, demud_voc: np.ndarray, n_fft=2048, hop_length=512, win_length=None):
+    def get_mag_and_phase(channel_data):
+        stft = librosa.stft(channel_data, n_fft=n_fft, hop_length=hop_length, win_length=win_length, center=True)
+        magnitude = np.abs(stft)
+        phase = np.angle(stft)
+        return magnitude, phase
+
+    print(org_voc.shape, demud_voc.shape)
+    mag_org_voc_l, phase_org_voc_l = get_mag_and_phase(org_voc[:, 0])
+    mag_org_voc_r, phase_org_voc_r = get_mag_and_phase(org_voc[:, 1])
+    mag_demud_voc_l, phase_demud_voc_l = get_mag_and_phase(demud_voc[:, 0])
+    mag_demud_voc_r, phase_demud_voc_r = get_mag_and_phase(demud_voc[:, 1])
+    swapped_phase_l = mag_org_voc_l * np.exp(1j * phase_demud_voc_l)
+    swapped_phase_r = mag_org_voc_r * np.exp(1j * phase_demud_voc_r)
+    org_voc_swapped_phase_l = librosa.istft(swapped_phase_l, n_fft=n_fft, hop_length=hop_length, win_length=win_length, center=True)
+    org_voc_swapped_phase_r = librosa.istft(swapped_phase_r, n_fft=n_fft, hop_length=hop_length, win_length=win_length, center=True)
+    org_voc_swapped_phase_l = librosa.util.fix_length(org_voc_swapped_phase_l, len(org_voc[:, 0]))
+    org_voc_swapped_phase_r = librosa.util.fix_length(org_voc_swapped_phase_r, len(org_voc[:, 1]))
+    swapped_stereo = np.stack([org_voc_swapped_phase_l, org_voc_swapped_phase_r], axis=1)
+    return swapped_stereo
+
+def transfer_phase_only(source_audio, target_audio):
+    """
+    Transfer the phase of target_audio to source_audio while preserving source_audio's magnitude.
+
+    Parameters:
+        source_audio (ndarray): Stereo source audio signal (shape: 2 x samples).
+        target_audio (ndarray): Stereo target audio signal (shape: 2 x samples).
+
+    Returns:
+        modified_audio (ndarray): Stereo audio signal with source magnitude and target phase.
+    """
+    if source_audio.shape != target_audio.shape or source_audio.shape[0] != 2:
+        raise ValueError("Source and target audio must be stereo with the same shape.")
+    modified_audio = []
+    for channel in range(2):
+        source_stft = librosa.stft(source_audio[channel, :])
+        target_stft = librosa.stft(target_audio[channel, :])
+        source_magnitude = np.abs(source_stft)
+        target_phase = np.angle(target_stft)
+        modified_stft = source_magnitude * np.exp(1j * target_phase)
+        modified_audio_channel = librosa.istft(modified_stft)
+        modified_audio.append(modified_audio_channel)
+    modified_audio = np.vstack(modified_audio)
+    return modified_audio
+
+def apply_phase_from_audio(audio1, audio2):
+    """
+    Apply the phase of one stereo audio signal to another.
+
+    Parameters:
+        audio1 (ndarray): Stereo audio signal 1 (shape: 2 x samples).
+        audio2 (ndarray): Stereo audio signal 2 (shape: 2 x samples).
+
+    Returns:
+        result_audio (ndarray): Stereo audio signal with audio1's magnitude and audio2's phase (shape: 2 x samples).
+    """
+    if audio1.shape[0] != 2 or audio2.shape[0] != 2:
+        raise ValueError("Both audio signals must be stereo (2 channels).")
+    if audio1.shape[1] != audio2.shape[1]:
+        raise ValueError("Both audio signals must have the same number of samples.")
+    audio1_fft = np.fft.fft(audio1, axis=1)
+    audio2_fft = np.fft.fft(audio2, axis=1)
+    magnitude1 = np.abs(audio1_fft)
+    phase2 = np.angle(audio2_fft)
+    combined_fft = magnitude1 * np.exp(1j * phase2)
+    result_audio = np.fft.ifft(combined_fft, axis=1).real
+    return result_audio
+
+COMP = [round(1.004 + 0.001 * i, 3) for i in range(37)]
+
+def lowpass_filter(data, highcut, fs, order=4):
+    nyquist = 0.5 * fs
+    high = highcut / nyquist
+    b, a = butter(order, high, btype="low")
+    y = lfilter(b, a, data, axis=0)
+    return y
+
+def clip_audio_middle(audio, fs, duration=30):
+    """
+    Clip a segment of the specified duration (in seconds) from the middle of the audio.
+    """
+    audio = audio.T
+    total_samples = audio.shape[0]
+    max_samples = int(fs * duration)
+    if total_samples <= max_samples:
+        return audio.T
+    middle_index = total_samples // 2
+    start_index = max(0, middle_index - max_samples // 2)
+    end_index = start_index + max_samples
+    audio = audio[start_index:end_index]
+    return audio.T
+
+def calculate_comp_level(source, raw_mix, set_comp, fs=44100):
+    try:
+        source = clip_audio_middle(source, fs, duration=30)
+        raw_mix = clip_audio_middle(raw_mix, fs, duration=30)
+        comp_val_list = []
+        comp_dict = {}
+        highcut = 150
+        for c in COMP:
+            source_test = source * c
+            sec_source = -source_test.T + raw_mix.T
+            sec_source_filtered = lowpass_filter(sec_source, highcut, fs)
+            sec_source_size = np.abs(sec_source_filtered).mean()
+            comp_val_list.append(sec_source_size)
+            comp_dict = {**comp_dict, **{sec_source_size: c}}
+        minimum_val = min(comp_val_list)
+        return comp_dict[minimum_val]
+    except Exception as e:
+        print(e)
+        return set_comp

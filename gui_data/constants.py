@@ -1,8 +1,9 @@
 import platform
+from pathlib import Path
 
 #Platform Details
 OPERATING_SYSTEM = platform.system()
-SYSTEM_ARCH = platform.platform()
+SYSTEM_ARCH = platform.platform()#"----------------------------------"]
 SYSTEM_PROC = platform.processor()
 ARM = 'arm'
 
@@ -11,9 +12,10 @@ is_macos = False
 CPU = 'cpu'
 CUDA_DEVICE = 'cuda'
 DIRECTML_DEVICE = "privateuseone"
+MPS_DEVICE = "mps"
 
 #MAIN_FONT_NAME = "Century Gothic"
-OPT_SEPARATOR_SAVE = '─'*25
+OPT_SEPARATOR_SAVE = '─'*30
 BG_COLOR = '#0e0e0f'
 FG_COLOR = '#13849f'
 
@@ -29,8 +31,11 @@ DEMUCS_6_STEM_MODEL = 'htdemucs_6s'
 DEFAULT = "Default"
 ALIGNMENT_TOOL = 'Alignment Tool Options'
 
+STEMS_KEY = 'stems'
+VERSION_KEY = 'version'
 SINGLE_FILE = 'SINGLE_FILE'
-MULTIPLE_FILE = 'MULTI_FILE'
+MULTIPLE_FILE = 'MULTIPLE_FILE'
+MULTIPLE_FILE_TYPE = 'MULTIPLE_FILE_TYPE'
 MAIN_MULTIPLE_FILE = 'MAIN_MULTI_FILE'
 CHOOSE_EXPORT_FIR = 'CHOOSE_EXPORT_FIR'
 
@@ -47,6 +52,7 @@ DEMUCS_V2 = 'v2'
 DEMUCS_V3 = 'v3'
 DEMUCS_V4 = 'v4'
 
+VERSION_LIST_DEMUCS = [DEMUCS_V3, DEMUCS_V4]
 DEMUCS_V1_TAG = 'v1 | '
 DEMUCS_V2_TAG = 'v2 | '
 DEMUCS_V3_TAG = 'v3 | '
@@ -58,6 +64,8 @@ DEMUCS_VERSION_MAPPER = {
             DEMUCS_V2:DEMUCS_V2_TAG,
             DEMUCS_V3:DEMUCS_V3_TAG,
             DEMUCS_V4:DEMUCS_V4_TAG}
+
+MULTI_STEM_NETS = [MDX_ARCH_TYPE, DEMUCS_ARCH_TYPE]
 
 #Download Center
 DOWNLOAD_FAILED = 'Download Failed'
@@ -77,6 +85,9 @@ DOWNLOADING_ITEM = 'Downloading Item'
 FILE_EXISTS = 'File already exists!'
 DOWNLOADING_UPDATE = 'Downloading Update...'
 DOWNLOAD_MORE = 'Download More Models'
+OPEN_MODELS_FOLDER = 'Open Model Folder'
+INSTALL_NEW_MODEL = 'Install Model'
+CHANGE_A_MODEL_DEFAULT = 'Edit Model Config'
 IS_KARAOKEE = "is_karaoke"
 IS_BV_MODEL = "is_bv_model"
 IS_BV_MODEL_REBAL = "is_bv_model_rebalanced"
@@ -85,6 +96,7 @@ INPUT_STEM_NAME = 'Input Stem Name'
 #Menu Options
 
 AUTO_SELECT = 'Auto'
+CALCULATE_SELECT = 'Calculate'
 
 #LINKS
 DOWNLOAD_CHECKS = "https://raw.githubusercontent.com/TRvlvr/application_data/main/filelists/download_checks.json"
@@ -113,6 +125,7 @@ VIP_REPO = b'\xf3\xc2W\x19\x1foI)\xc2\xa9\xcc\xb67(Z\xf5',\
 NO_CODE = 'incorrect_code'
 
 #Extensions
+BIN_EXT = '.bin'
 ONNX = '.onnx'
 CKPT = '.ckpt'
 CKPT_C = '.ckptc'
@@ -120,6 +133,7 @@ YAML = '.yaml'
 PTH = '.pth'
 TH_EXT = '.th'
 JSON = '.json'
+ALIAS_EXT = '.uvralias'
 
 #GUI Buttons
 START_PROCESSING = 'Start Processing'
@@ -164,6 +178,10 @@ BV_VOCAL_STEM_I = 'with_backing_vocals'
 LEAD_VOCAL_STEM_LABEL = 'Lead Vocals'
 BV_VOCAL_STEM_LABEL = 'Backing Vocals'
 
+NOISE_STEM = 'Noise'
+REVERB_STEM = 'Reverb'
+SIMILARITY_STEM = 'Similarity'
+NO_SIMILARITY_STEM = 'Difference'
 VOCAL_STEM_ONLY = f'{VOCAL_STEM} Only'
 INST_STEM_ONLY = f'{INST_STEM} Only'
 PRIMARY_STEM_ONLY = f'{PRIMARY_STEM} Only'
@@ -218,10 +236,29 @@ STEM_SET_MENU = (VOCAL_STEM,
                  STRINGS_STEM, 
                  WOODWINDS_STEM, 
                  BRASS_STEM, 
-                 WIND_INST_STEM)
+                 WIND_INST_STEM,
+                 NOISE_STEM, 
+                 REVERB_STEM)
 
+MDX23C_MODEL_TYPE = 'MDX23C'
+BSRO_MODEL_TYPE = 'BS-Roformer'
+BSRO_NEW_MODEL_TYPE, BSRO_NEW_MODEL_TYPE_ = ('BS-Roformer v2', 'BS-Roformer New')
+MELRO_MODEL_TYPE = 'MelBand-Roformer'
+MELRO_NEW_MODEL_TYPE, MELRO_NEW_MODEL_TYPE_ = ('MelBand-Roformer v2', 'MelBand-Roformer New')
+SCNET_MODEL_TYPE = 'SCNet'
+BANDIT_MODEL_TYPE = 'Bandit'
+BANDIT_2_MODEL_TYPE, BANDIT_2_MODEL_TYPE_ = ('Bandit v2', 'Bandit 2')
+SET_MODEL_TYPE_MENU = (MDX23C_MODEL_TYPE,
+                       SCNET_MODEL_TYPE,
+                       BANDIT_MODEL_TYPE,
+                       BANDIT_2_MODEL_TYPE,
+                       BSRO_MODEL_TYPE,
+                       BSRO_NEW_MODEL_TYPE,
+                       MELRO_MODEL_TYPE,
+                       MELRO_NEW_MODEL_TYPE)
 STEM_SET_MENU_ONLY = list(STEM_SET_MENU) + [OPT_SEPARATOR_SAVE, INPUT_STEM_NAME]
 
+STEM_SET_MENU
 STEM_SET_MENU_2 = (
                  OTHER_STEM, 
                  BASS_STEM, 
@@ -233,12 +270,14 @@ STEM_SET_MENU_2 = (
                  WOODWINDS_STEM, 
                  BRASS_STEM, 
                  WIND_INST_STEM,
-                 "Noise",
-                 "Reverb")
+                 NOISE_STEM,
+                 REVERB_STEM)
 
 STEM_PAIR_MAPPER = {
             VOCAL_STEM: INST_STEM,
             INST_STEM: VOCAL_STEM,
+            SIMILARITY_STEM: NO_SIMILARITY_STEM,
+            NO_SIMILARITY_STEM: SIMILARITY_STEM,
             LEAD_VOCAL_STEM: BV_VOCAL_STEM,
             BV_VOCAL_STEM: LEAD_VOCAL_STEM,
             PRIMARY_STEM: SECONDARY_STEM}
@@ -246,6 +285,8 @@ STEM_PAIR_MAPPER = {
 STEM_PAIR_MAPPER_FULL = {
             VOCAL_STEM: INST_STEM,
             INST_STEM: VOCAL_STEM,
+            SIMILARITY_STEM: NO_SIMILARITY_STEM,
+            NO_SIMILARITY_STEM: SIMILARITY_STEM,
             OTHER_STEM: NO_OTHER_STEM,
             BASS_STEM: NO_BASS_STEM,
             DRUM_STEM: NO_DRUM_STEM,
@@ -323,7 +364,7 @@ BATCH_MODE = 'Batch Mode'
 BETA_VERSION = 'BETA'
 DEF_OPT = 'Default'
 USER_INPUT = "User Input"
-OPT_SEPARATOR = '─'*65
+OPT_SEPARATOR = '─'*70
 
 CHUNKS = (AUTO_SELECT, '1', '5', '10', '15', '20', 
           '25', '30', '35', '40', '45', '50', 
@@ -333,7 +374,7 @@ CHUNKS = (AUTO_SELECT, '1', '5', '10', '15', '20',
 BATCH_SIZE = (DEF_OPT, '2', '3', '4', '5', 
           '6', '7', '8', '9', '10')
 
-VOL_COMPENSATION = (AUTO_SELECT, '1.035', '1.08')
+VOL_COMPENSATION = (AUTO_SELECT, CALCULATE_SELECT)
 
 MARGIN_SIZE = ('44100', '22050', '11025')
 
@@ -344,10 +385,12 @@ TIME_STRETCH = 'Time Stretch'
 CHANGE_PITCH = 'Change Pitch'
 ALIGN_INPUTS = 'Align Inputs'
 MATCH_INPUTS = 'Matchering'
+PHASE_REPAIR = 'Phase Swapper'
+APOLLO_RESTORE = 'Apollo Restore'
 COMBINE_INPUTS = 'Combine Inputs'
 
 if OPERATING_SYSTEM == 'Windows' or OPERATING_SYSTEM == 'Darwin':  
-   AUDIO_TOOL_OPTIONS = (MANUAL_ENSEMBLE, TIME_STRETCH, CHANGE_PITCH, ALIGN_INPUTS, MATCH_INPUTS)
+   AUDIO_TOOL_OPTIONS = (MANUAL_ENSEMBLE, TIME_STRETCH, CHANGE_PITCH, ALIGN_INPUTS, MATCH_INPUTS, APOLLO_RESTORE, PHASE_REPAIR)
 else:
    AUDIO_TOOL_OPTIONS = (MANUAL_ENSEMBLE, ALIGN_INPUTS, MATCH_INPUTS)
 
@@ -373,7 +416,14 @@ NOUT_LSTM_SEL = (64, 128)
 DEMUCS_OVERLAP = (0.25, 0.50, 0.75, 0.99)
 MDX_OVERLAP = (DEF_OPT, 0.25, 0.50, 0.75, 0.99)
 MDX23_OVERLAP = range(2, 51)
+APOLLO_OVERLAP = range(0, 51)
 VR_AGGRESSION = range(0, 51)
+APOLLO_CHUNK = range(1, 51)
+
+PHASH_FIXER_MAPPER = {
+            "Swap Phase": [False, True],
+            "Swap Magnatude": [True, False]
+}
 
 TIME_WINDOW_MAPPER = {
             "None": None,
@@ -433,6 +483,12 @@ PHASE_SHIFTS_OPT = {
                      VHIGH_P:10,
                      VMAX_P:1,}
 
+DEMUD_PHASE_ROTATE = 'Phase Rotate'
+DEMUD_PHASE_INVERT = 'Phase Remix'
+DEMUD_COMBINE_METHODS = 'Combine Methods'
+DEMUD_PHASE_SWAP = 'Swap Phase'
+DEMUD_ADJUST_CLIP = 'Adjust Clips'
+DEMUD_OPTIONS = (DEMUD_PHASE_ROTATE, DEMUD_PHASE_INVERT, DEMUD_COMBINE_METHODS)
 VR_WINDOW = ('320', '512','1024')
 VR_CROP = ('256', '512', '1024')
 POST_PROCESSES_THREASHOLD_VALUES = ('0.1', '0.2', '0.3')
@@ -443,7 +499,7 @@ MDX_POP_NFFT = ('4096', '5120', '6144', '7680', '8192', '16384')
 MDX_POP_DIMF = ('2048', '3072', '4096')
 DENOISE_NONE, DENOISE_S, DENOISE_M = 'None', 'Standard', 'Denoise Model'
 MDX_DENOISE_OPTION = [DENOISE_NONE, DENOISE_S, DENOISE_M]
-MDX_SEGMENTS = list(range(32, 4000+1, 32))
+MDX_SEGMENTS = [DEFAULT] + list(range(32, 4000+1, 32))
 
 SAVE_ENSEMBLE = 'Save Ensemble'
 CLEAR_ENSEMBLE = 'Clear Selection(s)'
@@ -454,6 +510,8 @@ INVALID_ENTRY = 'Invalid Input, Please Try Again'
 ENSEMBLE_INPUT_RULE = '1. Only letters, numbers, spaces, and dashes allowed.\n2. No dashes or spaces at the start or end of input.'
 STEM_INPUT_RULE = '1. Only words with no spaces are allowed.\n2. No spaces, numbers, or special characters.'
 
+INVALID_ALIAS_VR = 'Cannot Set Alias For VR Arch Models'
+INVALID_ALIAS_MODEL = 'Cannot Set Alias For This Model'
 ENSEMBLE_OPTIONS = [OPT_SEPARATOR_SAVE, SAVE_ENSEMBLE, CLEAR_ENSEMBLE]
 ENSEMBLE_CHECK = 'ensemble check'
 KARAOKEE_CHECK = 'kara check'
@@ -504,7 +562,7 @@ WAV = 'WAV'
 FLAC = 'FLAC'
 MP3 = 'MP3'
 
-MP3_BIT_RATES = ('96k', '128k', '160k', '224k', '256k', '320k')
+MP3_BIT_RATES = ('32k', '48k', '64k', '96k', '128k', '160k', '224k', '256k', '320k')
 WAV_TYPE = ('PCM_U8', 'PCM_16', 'PCM_24', 'PCM_32', '32-bit Float', '64-bit Float')
 GPU_DEVICE_NUM_OPTS = (DEFAULT, '0', '1', '2', '3', '4', '5', '6', '7', '8')
 
@@ -516,6 +574,15 @@ RESET_PM_TO_DEFAULT = 'Reset All Application Settings to Default'
 
 SAVE_SET_OPTIONS = [OPT_SEPARATOR_SAVE, SAVE_SETTINGS, RESET_TO_DEFAULT]
 
+LISTBOX_TOOLTIP = 'LISTBOX_TOOL'
+CHUNK_SIZE_TOOLTOP = 'CHUNK_SIZE_TOOLTOP'
+SAVE_BUTTON_TOOLTIP = 'SAVE_BUTTON_TOOLTIP'
+SAVE_CLOSE_BUTTON_TOOLTIP = 'SAVE_CLOSE_BUTTON_TOOLTIP'
+NEW_INST_TOOLTIP = 'NEW_INST_TOOLTIP'
+DUP_TOOLTIP = 'DUP_TOOLTIP'
+PHASE_LOW_CUT = ('500', '700')
+PHASE_HIGH_CUT = ('5000', '7000')
+
 TIME_PITCH = ('1.0', '2.0', '3.0', '4.0')
 TIME_TEXT = '_time_stretched'
 PITCH_TEXT = '_pitch_shifted'
@@ -523,22 +590,25 @@ PITCH_TEXT = '_pitch_shifted'
 #RegEx Input Validation
 REG_PITCH = r'^[-+]?(1[0]|[0-9]([.][0-9]*)?)$'
 REG_TIME = r'^[+]?(1[0]|[0-9]([.][0-9]*)?)$'
-REG_COMPENSATION = r'\b^(1[0]|[0-9]([.][0-9]*)?|Auto|None)$\b'
+REG_COMPENSATION = r'\b^(1[0]|[0-9]([.][0-9]*)?|Auto|Calculate|None)$\b'
 REG_THES_POSTPORCESS = r'\b^([0]([.][0-9]{0,6})?)$\b'
 REG_CHUNKS = r'\b^(200|1[0-9][0-9]|[1-9][0-9]?|Auto|Full)$\b'
 REG_CHUNKS_DEMUCS = r'\b^(200|1[0-9][0-9]|[1-9][0-9]?|Auto|Full)$\b'
 REG_MARGIN = r'\b^[0-9]*$\b'
 REG_SEGMENTS = r'\b^(200|1[0-9][0-9]|[1-9][0-9]?|Default)$\b'
 REG_SAVE_INPUT = r'\b^([a-zA-Z0-9 -]{0,25})$\b'
-REG_INPUT_STEM_NAME = r'^(Wind Inst|[a-zA-Z]{1,25})$'
+REG_APOLLO_SAVE_INPUT = r'\b^([a-zA-Z0-9 -]{0,20})$\b'
+REG_INPUT_STEM_NAME = r'^(No )?[a-zA-Z]+( [a-zA-Z]+){0,2}$'
 REG_SEMITONES = r'^-?(20\.00|[01]?\d(\.\d{1,2})?|20)$'
 REG_AGGRESSION = r'^[-+]?[0-9]\d*?$'
+REG_CHUNK_APO = r'^[1-9]\d*$'
+REG_OVERLAP_APO = r'^[0-9]\d*$'
 REG_WINDOW = r'\b^[0-9]{0,4}$\b'
 REG_SHIFTS = r'\b^[0-9]*$\b'
 REG_BATCHES = r'\b^([0-9]*?|Default)$\b'
 REG_OVERLAP = r'\b^([0]([.][0-9]{0,6})?|Default)$\b'#r"(Default|[0-9]+(\.[0-9]+)?)"#
 REG_OVERLAP23 = r'\b^([1][0-9]|[2-9][0-9]*|Default)$\b'#r'\b^([2-9][0-9]*?|Default)$\b'
-REG_MDX_SEG = r'\b(?:' + '|'.join([str(num) for num in range(32, 1000001, 32)]) + r')\b'
+REG_MDX_SEG = r'\b(?:' + '|'.join([str(num) for num in range(32, 1000001, 32)]) + r'|Default)$\b'
 REG_ALIGN = r'^[-+]?[0-9]\d*?$'
 REG_VOL_COMP = r'^\d+\.\d{1,9}$'
 
@@ -555,7 +625,7 @@ DEFAULT_DATA = {
         'vr_model': CHOOSE_MODEL,
         'aggression_setting': 5,
         'window_size': 512,
-        'mdx_segment_size': 256,
+        'mdx_segment_size': DEF_OPT,
         'batch_size': DEF_OPT,
         'crop_size': 256, 
         'is_tta': False,
@@ -576,7 +646,7 @@ DEFAULT_DATA = {
         'segment': DEMUCS_SEGMENTS[0],
         'overlap': DEMUCS_OVERLAP[0],
         'overlap_mdx': MDX_OVERLAP[0],
-        'overlap_mdx23': '8',
+        'overlap_mdx23': '2',
         'shifts': 2,
         'chunks_demucs': CHUNKS[0],
         'margin_demucs': 44100,
@@ -610,9 +680,12 @@ DEFAULT_DATA = {
         'phase_shifts': NONE_P,#
         'is_save_align': False,#, 
         'is_match_frequency_pitch': True,#
+        'is_demud': False,
         'is_match_silence': True,#
         'is_spec_match': False,#
-        'is_mdx_c_seg_def': False,
+        'is_mdx_c_seg_def': True,
+        'is_mdx_c_seg_def_check': True,
+        'is_use_torch_inference_mode': False,
         'is_invert_spec': False, #
         'is_deverb_vocals': False, #
         'deverb_vocal_opt': 'Main Vocals Only', #
@@ -631,21 +704,25 @@ DEFAULT_DATA = {
         'mdx_stems': ALL_STEMS,
         'is_save_all_outputs_ensemble': True,
         'is_append_ensemble_name': False,
+        'apollo_overlap': '2',
+        'apollo_chunk_size': '5',
+        'apollo_model': CHOOSE_MODEL,
         'chosen_audio_tool': AUDIO_TOOL_OPTIONS[0],
         'choose_algorithm': MANUAL_ENSEMBLE_OPTIONS[0],
         'time_stretch_rate': 2.0,
         'pitch_rate': 2.0,
         'is_time_correction': True,
-        'is_gpu_conversion': False,
+        'is_gpu_conversion': True,
         'is_primary_stem_only': False,
         'is_secondary_stem_only': False,
         'is_testing_audio': False,#
         'is_auto_update_model_params': True,#
         'is_add_model_name': False,
         'is_accept_any_input': False,
+        'is_save_to_input_path': False,
         'is_task_complete': False,
         'is_normalization': False,
-        'is_use_opencl': False,
+        'is_use_directml': False,
         'is_wav_ensemble': False,
         'is_create_model_folder': False,
         'mp3_bit_set': '320k',#
@@ -655,9 +732,12 @@ DEFAULT_DATA = {
         'device_set': DEFAULT,
         'user_code': '',
         'export_path': '',
+        'last_export_path':'',
         'input_paths': [],
         'lastDir': None,
         'time_window': "3",
+        'phase_low_cutoff': "500",
+        'phase_high_cutoff': "5000",
         'intro_analysis': DEFAULT,
         'db_analysis': "Medium",
         'fileOneEntry': '',
@@ -671,7 +751,8 @@ DEFAULT_DATA = {
         'is_set_vocal_splitter': False,#
         'is_save_inst_set_vocal_splitter': False,#
         'model_sample_mode': False,
-        'model_sample_mode_duration': 30
+        'model_sample_mode_duration': 30,
+        'demudder_method': DEMUD_COMBINE_METHODS
 }
 
 SETTING_CHECK = ('vr_model',
@@ -729,7 +810,10 @@ SETTING_CHECK = ('vr_model',
                'is_match_silence',
                'is_spec_match',#,
                'is_match_frequency_pitch',#
+               'is_demud',
+               'demudder_method',
                'is_mdx_c_seg_def',
+               'is_use_torch_inference_mode',
                'is_invert_spec',#
                'is_deverb_vocals',#
                'deverb_vocal_opt',#
@@ -756,7 +840,12 @@ SETTING_CHECK = ('vr_model',
                'is_testing_audio',#
                'is_auto_update_model_params',#
                'is_add_model_name',
+               'apollo_overlap',
+               'apollo_chunk_size',
+               'apollo_model',
                "is_accept_any_input",
+               'last_export_path',
+               "is_save_to_input_path",
                'is_task_complete',
                'is_create_model_folder',
                'mp3_bit_set',#
@@ -767,7 +856,7 @@ SETTING_CHECK = ('vr_model',
                'user_code',
                'is_gpu_conversion',
                'is_normalization',
-               'is_use_opencl',
+               'is_use_directml',
                'is_wav_ensemble',
                'help_hints_var',
                'set_vocal_splitter',
@@ -775,6 +864,8 @@ SETTING_CHECK = ('vr_model',
                'is_save_inst_set_vocal_splitter',#
                'model_sample_mode',
                'model_sample_mode_duration',
+               'phase_low_cutoff',
+               'phase_high_cutoff',
                'time_window',
                'intro_analysis',
                'db_analysis',
@@ -851,6 +942,9 @@ MDX_PLACEMENT_TEXT = 'Place models in \"models/MDX_Net_Models\" directory.'
 DEMUCS_PLACEMENT_TEXT = 'Place models in \"models/Demucs_Models\" directory.'
 DEMUCS_V3_V4_PLACEMENT_TEXT = 'Place items in \"models/Demucs_Models/v3_v4_repo\" directory.'
 MDX_23_NAME = "MDX23C Model"
+ROFORMER_MODEL_NAME = "Roformer Model"
+SCNET_MODEL_NAME = 'SCNet Model'
+BANDIT_MODEL_NAME = 'Bandit Model'
 
 # Liscense info
 if OPERATING_SYSTEM=="Darwin":
@@ -898,9 +992,8 @@ LICENSE_TEXT = lambda a, p:f'Current Application Version: Ultimate Vocal Remover
                'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n' +\
                'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n' +\
                'AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n' +\
-               'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n' +\
-               'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n' +\
-               'SOFTWARE.'
+               'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT\n' +\
+               'OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n'
 
 # Message Box Text
 INVALID_INPUT = 'Invalid Input', 'The input is invalid.\n\nPlease verify the input still exists or is valid and try again.'
@@ -939,6 +1032,11 @@ MDX_SEGMENT_SIZE_HELP = ('Pick a segment size to balance speed, resource use, an
                          '• Smaller sizes consume less resources.\n'
                          '• Bigger sizes consume more resources, but may provide better results.\n'
                          '• Default size is 256. Quality can change based on your pick.')
+
+APOLLO_CHUNK_SIZE_HELP = ('Pick a chunk size to balance speed, resource use, and quality:\n'
+                         '• Smaller sizes consume less resources.\n'
+                         '• Bigger sizes consume more resources, but may provide better results.\n'
+                         '• Default size is 10. Quality can change based on your pick.')
 DEMUCS_STEMS_HELP = ('Select a stem for extraction with the chosen model:\n\n'
                      '• All Stems - Extracts all available stems.\n'
                      '• Vocals - Only the "vocals" stem.\n'
@@ -1027,6 +1125,8 @@ else:
 IS_TIME_CORRECTION_HELP = ('When checked, the output will retain the original BPM of the input.')
 SAVE_STEM_ONLY_HELP = 'Allows the user to save only the selected stem.'
 IS_NORMALIZATION_HELP = 'Normalizes output to prevent clipping.'
+IS_DIRECTML_HELP = ('• Utilizes DirectML instead of CUDA when checked. This option is useful for non-Nvidia GPU\'s.\n'
+                    '       - This option is experimental and may not work correctly with some networks.')
 IS_CUDA_SELECT_HELP = "If you have more than one GPU, you can pick which one to use for processing."
 CROP_SIZE_HELP = '**Only compatible with select models only!**\n\n Setting should match training crop-size value. Leave as is if unsure.'
 IS_TTA_HELP = ('This option performs Test-Time-Augmentation to improve the separation quality.\n\n'
@@ -1045,6 +1145,7 @@ MDX_OVERLAP_HELP = ('• This option controls the amount of overlap between pred
 OVERLAP_23_HELP = ('• This option controls the amount of overlap between prediction windows.\n'
                   '       - Higher values can provide better results, but will lead to longer processing times.')
 IS_SEGMENT_DEFAULT_HELP = '• The segment size is set based on the value provided in a chosen model\'s associated \nconfig file (yaml).'
+IS_TORCH_INF_MODE_HELP = '• Selecting this may speed up inferences for some models.\n• Please Note: If your audio outputs are coming out with total silence, your GPU may not be compatible with this option!\n       - If you run into this issue, simply de-select this option.'
 IS_SPLIT_MODE_HELP = '• Enables \"Segments\". \n• Deselecting this option is only recommended for those with powerful PCs.'
 IS_DEMUCS_COMBINE_STEMS_HELP = 'The application will create the secondary stem by combining the remaining stems \ninstead of inverting the primary stem with the mixture.'
 COMPENSATE_HELP = 'Compensates the audio of the primary stems to allow for a better secondary stem.'
@@ -1067,6 +1168,7 @@ IS_DEVERB_VOC_HELP = ('• This option removes reverb from a vocal stem.\n'
                      '       - You must have the "UVR-DeEcho-DeReverb" VR Arch model installed to use this option.\n'
                      '       - This option does not work in ensemble mode at this time.')
 IS_FREQUENCY_MATCH_HELP = 'Matches the frequency cut-off of the primary stem to that of the secondary stem.'
+IS_DEMUD_HELP = 'Can enhance instrumental stem quality.'
 CLEAR_CACHE_HELP = 'Clears settings for unrecognized models chosen by the user.'
 IS_SAVE_ALL_OUTPUTS_ENSEMBLE_HELP = 'If enabled, all individual ensemble-generated outputs are retained.'
 IS_APPEND_ENSEMBLE_NAME_HELP = 'When enabled, the ensemble name is added to the final output.'
@@ -1081,7 +1183,8 @@ IS_INVERT_SPEC_HELP = (
     '• Inverts primary stem using spectrograms, instead of waveforms.\n'
     '• Slightly slower inversion method.'
 )
-IS_TESTING_AUDIO_HELP = 'Appends a 10-digit number to saved files to avoid accidental overwrites.'
+IS_TESTING_AUDIO_HELP = 'Adds a unique 10-digit number to outputs to prevent users from overwriting files.'
+IS_SAVE_TO_INPUT_HELP = 'Saves all output audio to input audio path.'
 IS_MODEL_TESTING_AUDIO_HELP = 'Appends the model name to outputs for comparison across different models.'
 IS_ACCEPT_ANY_INPUT_HELP = (
     'Allows all types of inputs when enabled, even non-audio formats.\n'
@@ -1115,10 +1218,33 @@ CHOSEN_ENSEMBLE_HELP = (
 )
 CHOSEN_PROCESS_METHOD_HELP = (
     'Choose a Processing Method:\n'
+    'Select from various AI networks and algorithms to process your track:\n\n'
+    '• VR Architecture: Uses magnitude spectrograms for source separation.\n'
+    '• MDX-Net: Employs a Hybrid Spectrogram network for source separation.\n'
+    '• Demucs v3: Also utilizes a Hybrid Spectrogram network for source separation.\n'
+    '• Ensemble Mode: Combine results from multiple models and networks for optimal results.\n'
+    '• Audio Tools: Additional utilities for added convenience.'
+)
+
+CHOSEN_PROCESS_METHOD_HELP = (
+    'Choose a Processing Method:\n'
     'Select from various AI networks and algorithms to process your track:\n'
     '\n'
     '• VR Architecture: Uses magnitude spectrograms for source separation.\n'
-    '• MDX-Net: Employs a Hybrid Spectrogram network for source separation.\n'
+    '• MDX-Net: This is a family of different AI networks that include -\n'
+    '   • MDX-Net (Original): Employs a Hybrid Spectrogram network for source separation.\n'
+    '   • MDX23C: This is an upgraded implementation of the original MDX-Net architecture.\n'
+    '   • BS-Roformer: This network uses a band-split module and hierarchical Transformers\n'
+    '      with Rotary Position Embedding (RoPE) to achieve superior multi-band mask estimation\n'
+    '      and ranked first in the Sound Demixing Challenge (SDX23).\n'
+    '   • MelBand-Roformer: This network leverages a Mel-band scheme and hierarchical Transformers\n'
+    '      with Rotary Position Embedding (RoPE) to achieve enhanced separation performance,\n'
+    '      outperforming BS-RoFormer on tasks like vocals and drums using MUSDB18HQ.\n'
+    '   • SCNet: This is a lightweight network optimized for improved performance.\n'
+    '   • Bandit: This network improves on Bandsplit RNN for cinematic audio by using smarter\n'
+    '      frequency scales, a shared encoder to make it faster and more efficient, and detachable\n'
+    '      parts for flexibility, achieving the best results for separating dialogue on the Divide\n'
+    '      and Remaster dataset.\n'
     '• Demucs v3: Also utilizes a Hybrid Spectrogram network for source separation.\n'
     '• Ensemble Mode: Combine results from multiple models and networks for optimal results.\n'
     '• Audio Tools: Additional utilities for added convenience.'
@@ -1152,6 +1278,11 @@ FORMAT_SETTING_HELP = 'Save Outputs As: '
 SECONDARY_MODEL_ACTIVATE_HELP = (
     'When enabled, the application will perform an additional inference using the selected model(s) above.'
 )
+
+CHOOSE_APOLLO_MODEL_HELP = (
+    'Choose the Apollo model to use to restore audio.'
+)
+
 SECONDARY_MODEL_HELP = (
     'Choose the Secondary Model:\n'
     'Select the secondary model associated with the stem you want to process with the current method.'
@@ -1187,7 +1318,10 @@ AUDIO_TOOLS_HELP = (
     '    - This tool provides similar functionality to "Utagoe."\n'
     '    - Primary Audio: This is usually a mixture.\n'
     '    - Secondary Audio: This is usually an instrumental.\n'
-    '• Matchering: Choose 2 audio files. The matchering algorithm will master the target audio to have the same RMS, FR, peak amplitude, and stereo width as the reference audio.'
+    '• Matchering: Choose 2 audio files. The matchering algorithm will master the target audio to have the same RMS, FR, peak amplitude, and stereo width as the reference audio.\n'
+    '• Apollo Restore: Apollo is a music restoration AI that fixes distortions and artifacts from audio codecs, especially at low bitrates. It effectively restores MP3s at 32 kbps and above, improving audio quality across compression levels.\n'
+    #'    - It effectively restores MP3s at 32 kbps and above, improving audio quality across compression levels.\n'
+    '• Phase Swapper: Choose 2 audio files. The phase of the reference audio is applied to the target audio.'
 )
              
 PRE_PROC_MODEL_INST_MIX_HELP = 'When enabled, the application will generate a third output without the selected stem and vocals.'         
@@ -1206,6 +1340,11 @@ BATCH_SIZE_HELP = ('Specify the number of batches to be processed at a time.\n\n
          
 VR_MODEL_NOUT_HELP = ""
 VR_MODEL_NOUT_LSTM_HELP = ""
+  
+  
+PHASE_LOW_HELP = 'Select where to cut off phase correction on the low end.'
+PHASE_HIGH_HELP = 'Select where to cut off phase correction on the high end.'
+#IS_PHASE_HELP = 'Select the phase for the secondary audio.\n• Note: Using the "Automatic" option is strongly recommended.'
   
 IS_PHASE_HELP = 'Select the phase for the secondary audio.\n• Note: Using the "Automatic" option is strongly recommended.'
 IS_ALIGN_TRACK_HELP = 'Enable this to save the secondary track once aligned.'
@@ -1299,6 +1438,10 @@ EXIT_PROCESS_ERROR = 'Active Process', 'Please stop the active process or wait f
 EXIT_HALTED_PROCESS_ERROR = 'Halting Process', 'Please wait for the application to finish halting the process before exiting.'
 EXIT_DOWNLOAD_ERROR = 'Active Download', 'Please stop the download or wait for it to complete before you exit.'
 SET_TO_DEFAULT_PROCESS_ERROR = 'Active Process', 'You cannot reset all of the application settings during an active process.'
+INSTALL_MODELS_PROCESS_ERROR = (
+    'Active Process',
+    'You cannot install models during an active process.',
+)
 SET_TO_ANY_PROCESS_ERROR = 'Active Process', 'You cannot reset the application settings during an active process.'
 RESET_ALL_TO_DEFAULT_WARNING = 'Reset Settings Confirmation', 'All application settings will be set to factory default.\n\nAre you sure you wish to continue?'
 AUDIO_VERIFICATION_CHECK = lambda i, e:f'++++++++++++++++++++++++++++++++++++++++++++++++++++\n\nBroken File Removed: \n\n{i}\n\nError Details:\n\n{e}\n++++++++++++++++++++++++++++++++++++++++++++++++++++'
@@ -1335,6 +1478,7 @@ DONE = ' Done!\n'
 ENSEMBLES_SAVED = 'Ensembled outputs saved!\n\n'
 
 #Additional Text
+CHOOSE_INSTALL_ASK = 'CHOOSE_INSTALL_ASK'
 CHOOSE_PROC_METHOD_MAIN_LABEL = 'CHOOSE PROCESS METHOD'
 SELECT_SAVED_SETTINGS_MAIN_LABEL = 'SELECT SAVED SETTINGS'
 CHOOSE_MDX_MODEL_MAIN_LABEL = 'CHOOSE MDX-NET MODEL'
@@ -1344,6 +1488,7 @@ SEGMENT_MDX_MAIN_LABEL = 'SEGMENT SIZE'
 SELECT_VR_MODEL_MAIN_LABEL = 'CHOOSE VR MODEL'
 AGGRESSION_SETTING_MAIN_LABEL = 'AGGRESSION SETTING'
 WINDOW_SIZE_MAIN_LABEL = 'WINDOW SIZE'
+CHOOSE_APOLLO_MODEL_MAIN_LABEL = 'CHOOSE APOLLO MODEL'
 CHOOSE_DEMUCS_MODEL_MAIN_LABEL = 'CHOOSE DEMUCS MODEL'
 CHOOSE_STEMS_MAIN_LABEL = 'CHOOSE STEM(S)'
 CHOOSE_SEGMENT_MAIN_LABEL = 'SEGMENT'
@@ -1370,6 +1515,17 @@ FILE_TWO_MATCH_MAIN_LABEL = "REFERENCE AUDIO"
 TIME_WINDOW_MAIN_LABEL = "TIME ADJUSTMENT"
 INTRO_ANALYSIS_MAIN_LABEL = "INTRO ANALYSIS"
 VOLUME_ADJUSTMENT_MAIN_LABEL = "VOLUME ADJUSTMENT"
+
+APOLLO_OVERLAP_MAIN_LABEL = 'OVERLAP'
+APOLLO_CHUNK_MAIN_LABEL = 'CHUNK SIZE'
+#WINDOW_SIZE_MAIN_LABEL = 'WINDOW SIZE'
+
+PHASE_OPT_MAIN_LABEL = "Swap Option"
+PHASE_LOW_MAIN_LABEL = "LOW CUTOFF (HZ)"
+PHASE_HIGH_MAIN_LABEL = "HIGH CUTOFF (HZ)"
+
+YAML_DROP_NAME = 'mdxcmodelparamOption'
+MODEL_DEF_DNAME = 'changemodeldefault'
 SELECT_INPUTS = "Select Input(s)"
 SELECTED_INPUTS = 'Selected Inputs'
 WIDEN_BOX = 'Widen Box'
@@ -1378,7 +1534,13 @@ CLOSE_WINDOW = 'Close Window'
 DUAL_AUDIO_PROCESSING = 'Dual Audio Batch Processing'
 CANCEL_TEXT = "Cancel"
 CONFIRM_TEXT = "Confirm"
+EDIT_CONFIG_TEXT = 'Edit Model Param'
+INSTALL_CONFIG_TEXT = 'Install New Yaml'
+OPEN_YAML_FOLDER_TEXT = 'Open Yaml Folder'
 SELECT_MODEL_TEXT = 'Select Model'
+SELECT_MODEL_I_TEXT = 'Select Model to Install'
+MOVING_MODEL_TEXT = 'Importing Model...'
+CHOOSE_MODEL_INSTALL_TEXT = 'Choose Model to Install'
 NONE_SELECTED = 'None Selected'
 SAVE_TEXT = 'Save'
 OVERLAP_TEXT = 'Overlap'
@@ -1390,7 +1552,7 @@ ADDITIONAL_SETTINGS_TEXT = 'Additional Settings'
 ADVANCED_ALIGN_TOOL_OPTIONS_TEXT = 'Advanced Align Tool Options'
 ADVANCED_DEMUCS_OPTIONS_TEXT = 'Advanced Demucs Options'
 ADVANCED_ENSEMBLE_OPTIONS_TEXT = 'Advanced Ensemble Options'
-ADVANCED_MDXNET23_OPTIONS_TEXT = 'Advanced MDX-NET23 Options'
+ADVANCED_MDXNET23_OPTIONS_TEXT = 'Advanced Multi-Network Options'
 ADVANCED_MDXNET_OPTIONS_TEXT = 'Advanced MDX-Net Options'
 ADVANCED_OPTION_MENU_TEXT = 'Advanced Option Menu'
 ADVANCED_VR_OPTIONS_TEXT = 'Advanced VR Options'
@@ -1405,15 +1567,30 @@ BV_MODEL_TEXT = 'BV Model'
 CHANGE_MODEL_DEFAULT_TEXT = 'Change Model Default'
 CHANGE_MODEL_DEFAULTS_TEXT = 'Change Model Defaults'
 CHANGE_PARAMETERS_TEXT = 'Change Parameters'
-CHOOSE_ADVANCED_MENU_TEXT = 'Choose Advanced Menu' 
+SELECT_MODELS_TO_MATCH = 'Bulk Model Match Config'
+OPEN_MODEL_FOLDER = 'Open Models Folder'
+CONFIRM_ALIAS = 'Confirm Model Alias'
+DELETE_ALIAS = 'Delete Model Alias'
+SET_MODEL_ALIAS_TEXT = 'Set Model Alias'
+SET_MODEL_ALIAS_E_TEXT = (
+    'This option allows users to choose a new alias for the chosen model.'
+)
+SET_MODEL_ALIAS_I_TEXT = (
+    'This option allows users to choose an alias for the installed model.'
+)
+SELECT_MODELS_TO_MATCH_E = 'This tool lets users mirror the settings of multiple models to match the one\nselected above. Please note: this action will overwrite existing model settings,\nso proceed with caution!'
+SELECT_MODEL_BULK_TEXT = 'Bulk Model Config'
+CHOOSE_ADVANCED_MENU_TEXT = 'Choose Advanced Menu'
 CHOOSE_MODEL_PARAM_TEXT = 'Choose Model Param'
+EDIT_MODEL_PARAM_TEXT = 'Edit Model Param Stems'
 CLEAR_AUTOSET_CACHE_TEXT = 'Clear Auto-Set Cache'
+DEMUDDER_OPTIONS_TEXT = 'Demudder Options'
 COMBINE_STEMS_TEXT = 'Combine Stems'
 CONFIRM_UPDATE_TEXT = 'Confirm Update'
 COPIED_TEXT = 'Copied!'
 COPY_ALL_TEXT_TEXT = 'Copy All Text'
 DEFINED_PARAMETERS_DELETED_TEXT = 'Defined Parameters Deleted'
-DELETE_PARAMETERS_TEXT = 'Delete Parameters'
+DELETE_PARAMETERS_TEXT = 'Reset Parameters'
 DELETE_USER_SAVED_SETTING_TEXT = 'Delete User Saved Setting'
 DEMUCS_TEXT = 'Demucs'
 DENOISE_OUTPUT_TEXT = 'Denoise Output'
@@ -1438,9 +1615,13 @@ INPUT_STEM_NAME_TEXT = 'Input Stem Name'
 INPUT_UNIQUE_STEM_NAME_TEXT = 'Input Unique Stem Name'
 IS_INVERSE_STEM_TEXT = 'Is Inverse Stem'
 KARAOKE_MODEL_TEXT = 'Karaoke Model'
+ROFORMER_MODEL_TEXT = 'Roformer Model'
 MANUAL_DOWNLOADS_TEXT = 'Manual Downloads'
 MATCH_FREQ_CUTOFF_TEXT = 'Match Freq Cut-off'
-MDXNET_C_MODEL_PARAMETERS_TEXT = 'MDX-Net C Model Parameters'
+MULTI_MODEL_PARAMETERS_TEXT = 'Model Parameters'
+MODEL_INSTALLER_TEXT = 'Model Installer'
+DEMUD_TEXT = 'Enable Demudder'
+APOLLO_MODEL_PARAMETERS_TEXT = 'Apollo Model Parameters'
 MDXNET_MODEL_SETTINGS_TEXT = 'MDX-Net Model Settings'
 MDXNET_TEXT = 'MDX-Net'
 MODEL_PARAMETERS_CHANGED_TEXT = 'Model Parameters Changed'
@@ -1451,12 +1632,13 @@ NAME_SETTINGS_TEXT = 'Name Settings'
 NO_DEFINED_PARAMETERS_FOUND_TEXT = 'No Defined Parameters Found'
 NO_TEXT = 'No'
 NORMALIZE_OUTPUT_TEXT = 'Normalize Output'
-USE_OPENCL_TEXT = 'Use OpenCL'
+USE_DIRECTML_TEXT = 'Use DirectML'
 NOT_ENOUGH_MODELS_TEXT = 'Not Enough Models'
 NOTIFICATION_CHIMES_TEXT = 'Notification Chimes'
 OPEN_APPLICATION_DIRECTORY_TEXT = 'Open Application Directory'
 OPEN_LINK_TO_MODEL_TEXT = 'Open Link to Model'
 OPEN_MODEL_DIRECTORY_TEXT = 'Open Model Directory'
+CHANGE_MODEL_SETTINGS_T = lambda m: f'Edit Settings - {m}'
 OPEN_MODEL_FOLDER_TEXT = 'Open Model Folder'
 OPEN_MODELS_FOLDER_TEXT = 'Open Models Folder'
 PHASE_SHIFTS_TEXT = 'Phase Shifts'
@@ -1464,6 +1646,7 @@ POST_PROCESS_TEXT = 'Post-Process'
 POST_PROCESS_THRESHOLD_TEXT = 'Post-process Threshold'
 PREPROCESS_MODEL_CHOOSE_TEXT = 'Pre-process Model'
 PRIMARY_STEM_TEXT = 'Primary Stem'
+MODEL_TYPE_TEXT = 'Set Model Type'
 REFRESH_LIST_TEXT = 'Refresh List'
 REMOVE_SAVED_ENSEMBLE_TEXT = 'Remove Saved Ensemble'
 REPORT_ISSUE_TEXT = 'Report Issue'
@@ -1480,6 +1663,7 @@ SECONDARY_MODEL_TEXT = 'Secondary Model'
 SECONDARY_PHASE_TEXT = 'Secondary Phase'
 SECONDS_TEXT = 'Seconds'
 SEGMENT_DEFAULT_TEXT = 'Segment Default'
+TORCH_INFERENCE_MODE_TEXT = 'Inference Mode'
 SEGMENT_SIZE_TEXT = 'Segment Size'
 SEGMENTS_TEXT = 'Segments'
 SELECT_DOWNLOAD_TEXT = 'Select Download'
@@ -1487,6 +1671,7 @@ SELECT_MODEL_PARAM_TEXT = 'Select Model Param'
 SELECT_VOCAL_TYPE_TO_DEVERB_TEXT = 'Select Vocal Type to Deverb'
 SELECTED_MODEL_PLACEMENT_PATH_TEXT = 'Selected Model Placement Path'
 SETTINGS_GUIDE_TEXT = 'Settings Guide'
+SAVE_TO_INPUT_PATH_TEXT = 'Save to Input Path'
 SETTINGS_TEST_MODE_TEXT = 'Settings Test Mode'
 SHIFT_CONVERSION_PITCH_TEXT = 'Shift Conversion Pitch'
 SHIFTS_TEXT = 'Shifts'
@@ -1502,6 +1687,7 @@ STOP_DOWNLOAD_TEXT = 'Stop Download'
 SUPPORT_UVR_TEXT = 'Support UVR'
 TRY_MANUAL_DOWNLOAD_TEXT = 'Try Manual Download'
 UPDATE_FOUND_TEXT = 'Update Found'
+ROLLBACK_FOUND_TEXT = 'Roll Back'
 USER_DOWNLOAD_CODES_TEXT = 'User Download Codes'
 UVR_BUY_ME_A_COFFEE_LINK_TEXT = 'UVR \'Buy Me a Coffee\' Link'
 UVR_ERROR_LOG_TEXT = 'UVR Error Log'
@@ -1518,7 +1704,7 @@ WINDOW_SIZE_TEXT = 'Window Size'
 YES_TEXT = 'Yes'
 VERIFY_INPUTS_TEXT = 'Verify Inputs'
 AUDIO_INPUT_TOTAL_TEXT = 'Audio Input Total'
-MDX23C_ONLY_OPTIONS_TEXT = 'MDXNET23 Only Options'
+MDX23C_ONLY_OPTIONS_TEXT = 'Multi-Network Only Options'
 PROCESS_STARTING_TEXT = 'Process starting... '
 MISSING_MESS_TEXT = 'is missing or currupted.'
 SIMILAR_TEXT = "are the same."
@@ -1556,6 +1742,7 @@ ENSEMBLE_WARNING_NOT_ENOUGH_SHORT_TEXT = "Not Enough Models"
 ENSEMBLE_WARNING_NOT_ENOUGH_TEXT = "You must select 2 or more models to save an ensemble."
 NOT_ENOUGH_ERROR_TEXT = "Not enough files to process.\n"
 INVALID_FOLDER_ERROR_TEXT = 'Invalid Folder', 'Your given export path is not a valid folder!'
+INVALID_FOLDER_ERROR_UNWRITABLE_TEXT = 'Folder Not Writable', 'The provided directory is not writable or read only.'
 
 GET_DL_VIP_CODE_TEXT = ("Obtain codes by visiting one of the following links below."
                         "\nFrom there you can donate, pledge, "
@@ -1563,11 +1750,36 @@ GET_DL_VIP_CODE_TEXT = ("Obtain codes by visiting one of the following links bel
 CONFIRM_RESTART_TEXT = 'Restart Confirmation', 'This will restart the application and halt any running processes. Your current settings will be saved. \n\n Are you sure you wish to continue?'
 ERROR_LOADING_FILE_TEXT = 'Error Loading the Following File', 'Raw Error Details'
 LOADING_MODEL_TEXT = 'Loading model'
+DIRECT_ML_INCOM = lambda m: f'DirectML is incompatible with {m}. Defaulting to CPU'
+MPS_INCOM = lambda m: f'MPS is incompatible with {m}. Defaulting to CPU'
 FULL_APP_SET_TEXT = 'Full Application Settings'
 PROCESS_STARTING_TEXT = 'Process starting... '
+
+APOLLO_MODEL_FAIL_TEXT = 'Apollo model not valid.\n'
+
+MODEL_INSTALLER_A_TEXT = 'This tool allows users to import models directly into UVR.\nUpon model selection, a separate configuration window will\nappear if it is not recognized by the application.'
 PROCESS_STOPPED_BY_USER = '\n\nProcess stopped by user.'
 NEW_UPDATE_FOUND_TEXT = lambda version:f"\n\nNew Update Found: {version}\n\nClick the update button in the \"Settings\" menu to download and install!"
 ROLL_BACK_TEXT = 'Click Here to Roll Back'
+INPUT_DIR_FAIL_TEXT = 'Output path is not writable. Using default save path...\n'
+
+R_MOVE_MODEL = 'Move Model From Source'
+R_COPY_MODEL = 'Copy Model From Source'
+CONFIG_SAVED_SUCCESS = 'Configuration saved successfully!'
+CONFIG_DUP_MESS = (
+    'A Yaml file with the same name was found. The installed Yaml has been renamed.'
+)
+CONFIG_DUP_MESS_ = (
+    'A Yaml file with the same name was found.\nThe installed Yaml has been renamed.'
+)
+MODEL_OP_LIST = [OPT_SEPARATOR, DOWNLOAD_MORE, OPEN_MODELS_FOLDER, INSTALL_NEW_MODEL]
+MODEL_OP_LIST_ = MODEL_OP_LIST + [CHOOSE_MODEL]
+INSTALL_CONFIG_LIST = [INSTALL_CONFIG_TEXT, OPEN_YAML_FOLDER_TEXT, OPT_SEPARATOR]
+APOLLO_HANDLE = 'Apollo: '
+PM_SPLITTER = ': '
+APOLLO_TYPE = 'Apollo'
+APOLLO_PARAM_DROP = 'apollamodelparamOption'
+VR_NAME_MAPPER = {'': ''}
 
 def secondary_stem(stem:str):
     """Determines secondary stem"""
@@ -1582,3 +1794,39 @@ def secondary_stem(stem:str):
         secondary_stem = stem.replace(NO_STEM, "") if NO_STEM in stem else f"{NO_STEM}{stem}"
     
     return secondary_stem
+
+def can_write_to_directory(directory_path):
+    # Convert to Path object for compatibility
+    path = Path(directory_path)
+    
+    # Check if the directory exists and is indeed a directory
+    if not path.exists() or not path.is_dir():
+        return False
+    
+    # Try to write a temporary file
+    try:
+        test_file = path / ".write_test.tmp"
+        with open(test_file, "w") as f:
+            f.write("test")
+        test_file.unlink()  # Clean up test file after successful write
+        return True
+    except (OSError, IOError) as e:
+        # If there's an OS or IO error, we assume we don't have write permission
+        print(f"Error: {e}")
+        return False
+
+def capitalize_words(s):
+    def is_all_caps(w):
+        return w.isupper() and any((char.isalpha() for char in w))
+
+    if isinstance(s, str):
+        return " ".join(
+            (word if is_all_caps(word) else word.capitalize() for word in s.split())
+        )
+
+def shorten_string(input_string, max_length=43, truncation_marker="..)"):
+    marker_length = len(truncation_marker)
+    if len(input_string) > max_length:
+        return "W"*45
+
+    return input_string

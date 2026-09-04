@@ -91,6 +91,46 @@ source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz", hash = "sha256:f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b" }
 
 [[package]]
+name = "asteroid"
+version = "0.7.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "asteroid-filterbanks" },
+    { name = "huggingface-hub" },
+    { name = "julius" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pb-bss-eval" },
+    { name = "pytorch-lightning" },
+    { name = "pyyaml" },
+    { name = "scipy" },
+    { name = "soundfile" },
+    { name = "torch" },
+    { name = "torch-optimizer" },
+    { name = "torch-stoi" },
+    { name = "torchaudio" },
+    { name = "torchmetrics" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/02/2a/29e4266e48d244f39471896892cde58801c6469ce2075143026ab371bdb1/asteroid-0.7.0.tar.gz", hash = "sha256:0326f28c5342495cb08ba0520efd0e21e39435dfd78854837fdd5a6c9c9ca410" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/88/d2/38076c2afc81500b5c2f43c06d3976bdcedb0bcaa84d736faf3ffef19d4f/asteroid-0.7.0-py3-none-any.whl", hash = "sha256:ea97a24901d9d9851b4a594171bd7c6dd900fee2c132b9ce045aa09926d489c7" },
+]
+
+[[package]]
+name = "asteroid-filterbanks"
+version = "0.4.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "torch" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/90/fa/5c2be1f96dc179f83cdd3bb267edbd1f47d08f756785c016d5c2163901a7/asteroid-filterbanks-0.4.0.tar.gz", hash = "sha256:415f89d1dcf2b13b35f03f7a9370968ac4e6fa6800633c522dac992b283409b9" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/c5/7c/83ff6046176a675e6a1e8aeefed8892cd97fe7c46af93cc540d1b24b8323/asteroid_filterbanks-0.4.0-py3-none-any.whl", hash = "sha256:4932ac8b6acc6e08fb87cbe8ece84215b5a74eee284fe83acf3540a72a02eaf5" },
+]
+
+[[package]]
 name = "async-timeout"
 version = "5.0.1"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -109,10 +149,42 @@ wheels = [
 ]
 
 [[package]]
+name = "audiomentations"
+version = "0.24.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "librosa" },
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/6d/a4/0153169920a6c2177b7ab1cd2ccb2ea9f511d2f72f763109707bac37e1fc/audiomentations-0.24.0.tar.gz", hash = "sha256:d2e4bc24a286b5169afd2bd98233122388229fa2af62a6175329402ca01b9416" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/2e/fc/537ba0731f18b42d0458b92e286ffbd98c9c9636e7d69c1a84eed9ecf718/audiomentations-0.24.0-py3-none-any.whl", hash = "sha256:9d4d455b9d1854e7895872c1a1d553808d272be455caf6e54a7e05adf9c15701" },
+]
+
+[[package]]
 name = "audioread"
 version = "3.0.0"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/5d/cb/82a002441902dccbe427406785db07af10182245ee639ea9f4d92907c923/audioread-3.0.0.tar.gz", hash = "sha256:121995bd207eb1fda3d566beb851d3534275925bc35a4fb6da0cb11de0f7251a" }
+
+[[package]]
+name = "beartype"
+version = "0.14.1"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/89/3b/9ecfc75d1f8bb75cbdc87fcb3df7c6ec4bc8f7481cb7102859ade1736c9d/beartype-0.14.1.tar.gz", hash = "sha256:23df4715d19cebb2ce60e53c3cf44cd925843f00c71938222d777ea6332de3cb" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f6/db/8d01583b4175e0e45a6e6cd0c28db2dae38ffe5477141a7ac3a5a09c8bb9/beartype-0.14.1-py3-none-any.whl", hash = "sha256:0f70fccdb8eb6d7ddfaa3ffe3a0b66cf2edeb13452bd71ad46615775c2fa34f6" },
+]
+
+[[package]]
+name = "cached-property"
+version = "2.0.1"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/76/4b/3d870836119dbe9a5e3c9a61af8cc1a8b69d75aea564572e385882d5aefb/cached_property-2.0.1.tar.gz", hash = "sha256:484d617105e3ee0e4f1f58725e72a8ef9e93deee462222dbd51cd91230897641" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/11/0e/7d8225aab3bc1a0f5811f8e1b557aa034ac04bdf641925b30d3caf586b28/cached_property-2.0.1-py3-none-any.whl", hash = "sha256:f617d70ab1100b7bcf6e42228f9ddcb78c676ffa167278d9f730d1c2fba69ccb" },
+]
 
 [[package]]
 name = "certifi"
@@ -358,6 +430,15 @@ wheels = [
 ]
 
 [[package]]
+name = "efficientnet-pytorch"
+version = "0.7.1"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "torch" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/2e/a0/dd40b50aebf0028054b6b35062948da01123d7be38d08b6b1e5435df6363/efficientnet_pytorch-0.7.1.tar.gz", hash = "sha256:00b9b261effce59d2d47aae2ad238c29a2a65175470f41ada7ecac439b7c1ee1" }
+
+[[package]]
 name = "einops"
 version = "0.6.0"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -445,6 +526,24 @@ name = "future"
 version = "0.18.3"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/8f/2e/cf6accf7415237d6faeeebdc7832023c90e0282aa16fd3263db0eb4715ec/future-0.18.3.tar.gz", hash = "sha256:34a17436ed1e96697a86f9de3d15a3b0be01d8bc8de9c1dffd59fb8234ed5307" }
+
+[[package]]
+name = "huggingface-hub"
+version = "0.17.3"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "filelock" },
+    { name = "fsspec" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "tqdm" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/13/d2/e0d36491422425bb882e4a6432a06aee9e56348aeefd9aab648a995d173b/huggingface_hub-0.17.3.tar.gz", hash = "sha256:40439632b211311f788964602bf8b0d9d6b7a2314fba4e8d67b2ce3ecea0e3fd" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/aa/f3/3fc97336a0e90516901befd4f500f08d691034d387406fdbde85bea827cc/huggingface_hub-0.17.3-py3-none-any.whl", hash = "sha256:545eb3665f6ac587add946e73984148f2ea5c7877eac2e845549730570c1933a" },
+]
 
 [[package]]
 name = "humanfriendly"
@@ -613,6 +712,20 @@ wheels = [
 ]
 
 [[package]]
+name = "mir-eval"
+version = "0.8.2"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "decorator" },
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/28/db/3bf39fc9ab0fb757f297f9a0da7207e823688291f9e61bb67b44fa17bc2f/mir_eval-0.8.2.tar.gz", hash = "sha256:141a3e1193276889fc32e911547e73dcb3e829ee8cfea60f7bbcd633c0792569" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/1b/5a/69ce896a32ebc8c75deae00b1fba9837567405fa6ef37b377f2e85b856ae/mir_eval-0.8.2-py3-none-any.whl", hash = "sha256:114cda33d8e17408c170598e0b36ed0d71ff4a2fee8eaf9e165b58ecf1c87170" },
+]
+
+[[package]]
 name = "ml-collections"
 version = "0.1.1"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -623,21 +736,6 @@ dependencies = [
     { name = "six" },
 ]
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/aa/ea/853aa32dfa1006d3eb43384712f35b8f2d6f0a757b8c779d40c29e3e8515/ml_collections-0.1.1.tar.gz", hash = "sha256:3fefcc72ec433aa1e5d32307a3e474bbb67f405be814ea52a2166bfc9dbe68cc" }
-
-[[package]]
-name = "ml-dtypes"
-version = "0.5.4"
-source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
-dependencies = [
-    { name = "numpy" },
-]
-sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/0e/4a/c27b42ed9b1c7d13d9ba8b6905dece787d6259152f2309338aed29b2447b/ml_dtypes-0.5.4.tar.gz", hash = "sha256:8ab06a50fb9bf9666dd0fe5dfb4676fa2b0ac0f31ecff72a6c3af8e22c063453" }
-wheels = [
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/fe/3a/c5b855752a70267ff729c349e650263adb3c206c29d28cc8ea7ace30a1d5/ml_dtypes-0.5.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:b95e97e470fe60ed493fd9ae3911d8da4ebac16bd21f87ffa2b7c588bf22ea2c" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/41/79/7433f30ee04bd4faa303844048f55e1eb939131c8e5195a00a96a0939b64/ml_dtypes-0.5.4-cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b4b801ebe0b477be666696bda493a9be8356f1f0057a57f1e35cd26928823e5a" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/10/b1/8938e8830b0ee2e167fc75a094dea766a1152bde46752cd9bfc57ee78a82/ml_dtypes-0.5.4-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:388d399a2152dd79a3f0456a952284a99ee5c93d3e2f8dfe25977511e0515270" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/c7/a3/51886727bd16e2f47587997b802dd56398692ce8c6c03c2e5bb32ecafe26/ml_dtypes-0.5.4-cp310-cp310-win_amd64.whl", hash = "sha256:4ff7f3e7ca2972e7de850e7b8fcbb355304271e2933dd90814c1cb847414d6e2" },
-]
 
 [[package]]
 name = "mpmath"
@@ -676,6 +774,15 @@ wheels = [
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/68/00/9b38e272a770303692fc406c36e1a4c740f401522d5787691eb38a8925a8/multidict-6.7.1-cp310-cp310-win_amd64.whl", hash = "sha256:cf37cbe5ced48d417ba045aca1b21bafca67489452debcde94778a576666a1df" },
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/64/65/d8d42490c02ee07b6bbe00f7190d70bb4738b3cce7629aaf9f213ef730dd/multidict-6.7.1-cp310-cp310-win_arm64.whl", hash = "sha256:59bc83d3f66b41dac1e7460aac1d196edc70c9ba3094965c467715a70ecb46db" },
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/81/08/7036c080d7117f28a4af526d794aab6a84463126db031b007717c1a6676e/multidict-6.7.1-py3-none-any.whl", hash = "sha256:55d97cc6dae627efa6a6e548885712d4864b81110ac76fa4e534c03819fa4a56" },
+]
+
+[[package]]
+name = "munch"
+version = "4.0.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/e7/2b/45098135b5f9f13221820d90f9e0516e11a2a0f55012c13b081d202b782a/munch-4.0.0.tar.gz", hash = "sha256:542cb151461263216a4e37c3fd9afc425feeaf38aaa3025cd2a981fadb422235" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/56/b3/7c69b37f03260a061883bec0e7b05be7117c1b1c85f5212c72c8c2bc3c8c/munch-4.0.0-py2.py3-none-any.whl", hash = "sha256:71033c45db9fb677a0b7eb517a4ce70ae09258490e419b0e7f00d1e386ecb1b4" },
 ]
 
 [[package]]
@@ -899,28 +1006,19 @@ wheels = [
 
 [[package]]
 name = "onnx"
-version = "1.22.0"
+version = "1.17.0"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
 dependencies = [
-    { name = "ml-dtypes" },
     { name = "numpy" },
     { name = "protobuf" },
-    { name = "typing-extensions" },
 ]
-sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/04/19/8ea73a64b368b75fe339771a20a02bc61ea1f551484c9e3d9d0bfbd0450f/onnx-1.22.0.tar.gz", hash = "sha256:ef40c0aaf0b643857ea9306fc7eddce17eaf9fb0407e4801f1fc5758443a38e0" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/9a/54/0e385c26bf230d223810a9c7d06628d954008a5e5e4b73ee26ef02327282/onnx-1.17.0.tar.gz", hash = "sha256:48ca1a91ff73c1d5e3ea2eef20ae5d0e709bb8a2355ed798ffc2169753013fd3" }
 wheels = [
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ce/04/471f234e2716c83f17a26e1b50cd64c39428373e91dd018aafb3d499c108/onnx-1.22.0-cp310-cp310-macosx_12_0_universal2.whl", hash = "sha256:6d0ffffd63a4ecc21ddaeddd5bf02099cb701aa4243f2de00122726869065ca4" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/99/40/540a2fe3c49ce1709ff2015de20d9a351264fb442f8998f92cf0ba7e279e/onnx-1.22.0-cp310-cp310-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:33ce94119bbb7f05d9caea4ea7549f5185a54369f6bbc9f70171bd5ee6935bbc" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f8/0c/f41d5b89c38fb2ec410ab23c24fa110af786093b140644f7f953e436743b/onnx-1.22.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:87a3077958f66f9a26dec10077ac28326d9cec2cbe1f0b040947243449754573" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/11/8e/9f41d132855e93c2808cdd4afab1b5af67bd5e82e4a4fa9248006e4df87e/onnx-1.22.0-cp310-cp310-win32.whl", hash = "sha256:8a5eccce2d5fc6c5046928a9aa7cdd9750ea4a586f8de341d3d40d820c35fdec" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/e8/52/86caff81786a5428485795c79175ae2b12a630795bcb267b84e5f9e98450/onnx-1.22.0-cp310-cp310-win_amd64.whl", hash = "sha256:5c1c0408a9d4b4df33851672e5fc7590b96301ee123396d608f9ab6f045ab06b" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ee/6a/481561f1093834376ed493e4ca42a73e5be0d50031f2969c86593bdc7c96/onnx-1.22.0-cp312-abi3-macosx_12_0_universal2.whl", hash = "sha256:596fbf0490947533c1c1045ba860851dc9fb77471023dac9a71ba5b42ceab103" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/84/55/b34fc2aa30aa54b4a775402d24c4082242c720283a274fe976ac8eb94480/onnx-1.22.0-cp312-abi3-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:ae5a563f281cd9d2845622cecf6c092a57e4ee1b138f66fdbbdd4200567a5e16" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/09/a6/bd32357e6cc1ecb473afd78193d7231724f284435d2db25696ecfaaa1503/onnx-1.22.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:955e02e1f6d385b53d52f9cd7b9cdf5caf417c300bcfe3c64c6d542be763845b" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/5a/9d/3af461ac6c714b8b369cb71499659932f4f12cfb066250b62f7567c3d530/onnx-1.22.0-cp312-abi3-pyemscripten_2025_0_wasm32.whl", hash = "sha256:82e9f27fc1223cb06d68a56bed6f9d3caf3d0dad1b61bce45006d529b15bd94c" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/d0/f0/68195b5e5a53e333faf2660f5352ee43738d0e42fc5216cc6b1871a9fbfb/onnx-1.22.0-cp312-abi3-win32.whl", hash = "sha256:cc8b66b312f8f03a53e268afb67180a2d97dd12cc79e2b61361c6c0073448016" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/13/a8/734725bb703c5fabb687f79c79e51249475212b3eb37771ac4a4ac9b487f/onnx-1.22.0-cp312-abi3-win_amd64.whl", hash = "sha256:72ccebab3bac07215c204ce8848d42e78eaaa666badbf72d25cd359b9f269e3a" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/bd/2a/8ce48d8ae26a8761ad4e5dc771961b155c5c3c7c8540ec7f2f2d71b69af0/onnx-1.22.0-cp312-abi3-win_arm64.whl", hash = "sha256:f3c120dcdb70ad738f3c061b32798f408ea299eb69f84dd69ab4a6bf3c2ec01f" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/2e/29/57053ba7787788ac75efb095cfc1ae290436b6d3a26754693cd7ed1b4fac/onnx-1.17.0-cp310-cp310-macosx_12_0_universal2.whl", hash = "sha256:38b5df0eb22012198cdcee527cc5f917f09cce1f88a69248aaca22bd78a7f023" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/75/0d/831807a18db2a5e8f7813848c59272b904a4ef3939fe4d1288cbce9ea735/onnx-1.17.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d545335cb49d4d8c47cc803d3a805deb7ad5d9094dc67657d66e568610a36d7d" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/dd/5b/c4f95dbe652d14aeba9afaceb177e9ffc48ac3c03048dd3f872f26f07e34/onnx-1.17.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3193a3672fc60f1a18c0f4c93ac81b761bc72fd8a6c2035fa79ff5969f07713e" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/08/a9/c1f218085043dccc6311460239e253fa6957cf12ee4b0a56b82014938d0b/onnx-1.17.0-cp310-cp310-win32.whl", hash = "sha256:0141c2ce806c474b667b7e4499164227ef594584da432fd5613ec17c1855e311" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/0e/d3/d26ebf590a65686dde6b27fef32493026c5be9e42083340d947395f93405/onnx-1.17.0-cp310-cp310-win_amd64.whl", hash = "sha256:dfd777d95c158437fda6b34758f0877d15b89cbe9ff45affbedc519b35345cf9" },
 ]
 
 [[package]]
@@ -1015,6 +1113,22 @@ wheels = [
 ]
 
 [[package]]
+name = "pb-bss-eval"
+version = "0.0.2"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "cached-property" },
+    { name = "einops" },
+    { name = "mir-eval" },
+    { name = "pesq" },
+    { name = "pystoi" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/37/2a/377b05ba6c4293b8e86a3f85184181e3d681b146b812fc98781862490ff9/pb_bss_eval-0.0.2.tar.gz", hash = "sha256:395fbcabc9d3be66490131a67a122d08d4c2cdb88b2ddcd7a4120664c33c6d38" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/b2/d5/2825e46367d810dda650655a818fb8185147628f16ee85dd54aaa4dac8b0/pb_bss_eval-0.0.2-py3-none-any.whl", hash = "sha256:a72c2fd04c9f4a4e734cf615029c3877e6e4536225eeaaae05bb0cf014b3af1b" },
+]
+
+[[package]]
 name = "pefile"
 version = "2023.2.7"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -1022,6 +1136,12 @@ sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/78/c5/3b3c62223f72
 wheels = [
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/55/26/d0ad8b448476d0a1e8d3ea5622dc77b916db84c6aa3cb1e1c0965af948fc/pefile-2023.2.7-py3-none-any.whl", hash = "sha256:da185cd2af68c08a6cd4481f7325ed600a88f6a813bad9dea07ab3ef73d8d8d6" },
 ]
+
+[[package]]
+name = "pesq"
+version = "0.0.4"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/22/e6/f8bdcef3238ac10fb3ce37d150e9b03a152d971febd681f088c6e5e17d8e/pesq-0.0.4.tar.gz", hash = "sha256:b724b28f73fb638522982bd68e8c3c0957e2f45210639a460233b17aa7fc890b" }
 
 [[package]]
 name = "pillow"
@@ -1073,6 +1193,27 @@ wheels = [
 ]
 
 [[package]]
+name = "pretrainedmodels"
+version = "0.7.4"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "munch" },
+    { name = "torch" },
+    { name = "torchvision" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/84/0e/be6a0e58447ac16c938799d49bfb5fb7a80ac35e137547fc6cee2c08c4cf/pretrainedmodels-0.7.4.tar.gz", hash = "sha256:7e77ead4619a3e11ab3c41982c8ad5b86edffe37c87fd2a37ec3c2cc6470b98a" }
+
+[[package]]
+name = "primepy"
+version = "1.3"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/35/77/0cfa1b4697cfb5336f3a96e8bc73327f64610be3a64c97275f1801afb395/primePy-1.3.tar.gz", hash = "sha256:25fd7e25344b0789a5984c75d89f054fcf1f180bef20c998e4befbac92de4669" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/74/c1/bb7e334135859c3a92ec399bc89293ea73f28e815e35b43929c8db6af030/primePy-1.3-py3-none-any.whl", hash = "sha256:5ed443718765be9bf7e2ff4c56cdff71b42140a15b39d054f9d99f0009e2317a" },
+]
+
+[[package]]
 name = "propcache"
 version = "0.5.2"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -1100,17 +1241,15 @@ wheels = [
 
 [[package]]
 name = "protobuf"
-version = "7.36.1"
+version = "3.20.3"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
-sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/86/73/f66c748df06e7fe24e658eddd600d19c4b40bad836c97ce2d0ad9851fb6b/protobuf-7.36.1.tar.gz", hash = "sha256:d0f6470f0ce2b84e3feaea2d4b816378b37ba4d4aa08a274305373de93e2d524" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/55/5b/e3d951e34f8356e5feecacd12a8e3b258a1da6d9a03ad1770f28925f29bc/protobuf-3.20.3.tar.gz", hash = "sha256:2e3427429c9cffebf259491be0af70189607f365c2f41c7c3764af6f337105f2" }
 wheels = [
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f7/6c/3a54a58f2948b0f485df9ecdd06590f15d0a7abf46a89d50c3de709ff4ff/protobuf-7.36.1-cp310-abi3-macosx_10_9_universal2.whl", hash = "sha256:3cf2ee25d006cee57294a1196ea43b37feb78e0dcd1e8af5c1aeddb777655aca" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/6e/08/9f9548793c771095245c0eeaf0c84b76b16a5ef26158043d456f551344a0/protobuf-7.36.1-cp310-abi3-manylinux2014_aarch64.whl", hash = "sha256:43d3d37b1eb24c113b9b7d02008cac44e423f00b611b7781ae998d7623972969" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/fe/51/1bdbd612fa3c51e42ea6f45d05e84dc748ddcd2663e1aa1e89a00a33facd/protobuf-7.36.1-cp310-abi3-manylinux2014_s390x.whl", hash = "sha256:39c518c05586c016d7874ff6079ee115bcec1ea5fbb1d177fbf7867ef4c67e44" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/22/df/c799fe7a05ef16ba853a59db01f3a2c5f7d0676469589ccc4874f76a2a88/protobuf-7.36.1-cp310-abi3-manylinux2014_x86_64.whl", hash = "sha256:97198b77e369a0abd8e262b8f6c7266c55ddb796a3a12c76d7b8881188ed83aa" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/3d/33/d4724ec5d86d496fe4108e220618aa0837ad3423a7af7ccdd9684ccc77c8/protobuf-7.36.1-cp310-abi3-win32.whl", hash = "sha256:0b53ce95272aad50ad25d7ff03373743209822e8ba42ea7fad27d2bee1547d00" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/db/37/155788a0d8daded960375af604202805308169f9b859419ea0aa370946e2/protobuf-7.36.1-cp310-abi3-win_amd64.whl", hash = "sha256:51139351435d9b43d88a55eaa49fb6f737fbb478fb0cbf2cf694d1a04a9d3363" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/39/ca/c47f91d3cab175b01fd8c4f0d80fdf8613be876cc616e66ad281a59c5ddf/protobuf-7.36.1-py3-none-any.whl", hash = "sha256:7d951e46b3f963d6c264c367c437921de9d5aedd9c3f9612b9077736b4e3ad5c" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/28/55/b80e8567ec327c060fa39b242392e25690c8899c489ecd7bb65b46b7bb55/protobuf-3.20.3-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:f4bd856d702e5b0d96a00ec6b307b0f51c1982c2bf9c0052cf9019e9a544ba99" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/31/be/80a9c6f16dfa4d41be3edbe655349778ae30882407fa8275eb46b4d34854/protobuf-3.20.3-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:9aae4406ea63d825636cc11ffb34ad3379335803216ee3a856787bcf5ccc751e" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/db/96/948d3fcc1fa816e7ae1d27af59b9d8c5c5e582f3994fd14394f31da95b99/protobuf-3.20.3-cp310-cp310-win32.whl", hash = "sha256:28545383d61f55b57cf4df63eebd9827754fd2dc25f80c5253f9184235db242c" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/6f/5e/fc6feb366b0a9f28e0a2de3b062667c521cd9517d4ff55077b8f351ba2f3/protobuf-3.20.3-cp310-cp310-win_amd64.whl", hash = "sha256:67a3598f0a2dcbc58d02dd1928544e7d88f764b47d4a286202913f0b2801c2e7" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/8d/14/619e24a4c70df2901e1f4dbc50a6291eb63a759172558df326347dce1f0d/protobuf-3.20.3-py2.py3-none-any.whl", hash = "sha256:a7ca6d488aa8ff7f329d4c545b2dbad8ac31464f1d8b1c87ad1346717731e4db" },
 ]
 
 [[package]]
@@ -1256,6 +1395,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pystoi"
+version = "0.4.1"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/bf/3d/1ae8bdb686c6aaaeef474aa6b790abbe38f42b61188b57a974dd9320e521/pystoi-0.4.1.tar.gz", hash = "sha256:1c6f50d6fbfee46b00c922458cdbd27228d9830ca81cea788fd600fc2f7de6e4" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/1a/22/60cd92bd3ec00948800984410f4cf5ded5bd8e9b715729f3642efe0edb3d/pystoi-0.4.1-py2.py3-none-any.whl", hash = "sha256:e277b671663d26d35a2416c9c8010a74084e6c3970354506398051a554896939" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -1285,6 +1437,18 @@ dependencies = [
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/59/90/aca5b41c0229add6787b39bcef7dc9725cfd994f462508cd5b1b85393596/pytorch-lightning-2.0.0.tar.gz", hash = "sha256:632dec9af8036f726904e691c505d7650658ef0f4054a062c9e6a940ca09dfd8" }
 wheels = [
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/4c/6e/8a0b395b4058bd7e24a8f6a572255b815723d67ed65a121da25346f3148d/pytorch_lightning-2.0.0-py3-none-any.whl", hash = "sha256:eda04e51c3ca030f92f9eb30cbb10583575b4144a155cfd6b7d17e1bb9a08ffe" },
+]
+
+[[package]]
+name = "pytorch-ranger"
+version = "0.1.1"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "torch" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/bb/32/9269ee5981995e760c3bf51d6cf7f84a2ce051eca2315753910585bce50d/pytorch_ranger-0.1.1.tar.gz", hash = "sha256:aa7115431cef11b57d7dd7bc86e7302a911dae467f62ec5d0b10e1ff744875db" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/0d/70/12256257d861bbc3e176130d25be1de085ce7a9e60594064888a950f2154/pytorch_ranger-0.1.1-py3-none-any.whl", hash = "sha256:1e69156c9cc8439185cb8ba4725b18c91947fbe72743e25aca937da8aeb0c8ec" },
 ]
 
 [[package]]
@@ -1321,6 +1485,31 @@ wheels = [
 ]
 
 [[package]]
+name = "regex"
+version = "2026.9.3"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/19/c1/6b30b775c7bcc6cf6506a4d4741c2123e8d99cd50f3fe8cbd731f5fef526/regex-2026.9.3.tar.gz", hash = "sha256:aabd43208e335f4c3f0b56de3464b066dd425983a58f6eeb5738bcd7465403db" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/eb/9b/ce31551f7191af763ea8414f58289d0ec18ed1d9a531fdebf12dfb249db4/regex-2026.9.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6d416ed4058ea38f69884f3db523b0414c0094d262dde63694aa254e32a433e6" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ef/62/fec41d97d45c0ff82b609012d69813500d9682d88577b70332ea36b131af/regex-2026.9.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:107319f437fc382e1e445d0abf8923db07f76e5fb3245ac5b09604e5dc8d4f63" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/a7/b1/a35c61819ddd788bca7dc7a1be48a6bf5456044e3bb681553a15611879a3/regex-2026.9.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:05e9f7d16b42686fb38b1702071a7359469ba89e9d516e2ba5228e077dcac524" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/fb/6e/f105bdb0ec755f6a1e5f563f6afbcc22b34427c4ce11ab7f265d2df216cb/regex-2026.9.3-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:39d8d5490ba4b8f26ef2aef72b775b1e7fc1a5ebaf28d11e637eb27b0b6a3048" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/6b/f0/96e18e5b2a63f7aaf9ede0a1da656e5ebe795fbec035169a54aa021b89af/regex-2026.9.3-cp310-cp310-manylinux2014_ppc64le.manylinux_2_17_ppc64le.manylinux_2_28_ppc64le.whl", hash = "sha256:f4381151a29a7b9307842ff444609c4b9a402775fbe9afb3ec3e34ec0396bbae" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/af/5e/d6515ad82fb43e3d740abf33db479dd47ce7928c14feb37281ed762571e6/regex-2026.9.3-cp310-cp310-manylinux2014_s390x.manylinux_2_17_s390x.manylinux_2_28_s390x.whl", hash = "sha256:0efb99024ad5ba9198ffa816156b3319c3164b5a8d1e35940d92fdc9158b8d9f" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/99/d8/b4a74d131e33f800bd774b85ec2d269c9fb9bbc3f82a06c698bb7da6a5c9/regex-2026.9.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:7ab7ad8b557d1f21e8b4a97a2c1a2ac82cf10c92d6a875c90f038ca9ed85dc5b" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/d4/f3/9d21f325b5ff3a95cd79486e37d810f08b72ae26a2be5a795cbe7be3f70e/regex-2026.9.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:2a36e654181ecb996241bae256d28f26b03d019d6ef65c61dcf44396ab07c548" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/4b/e3/bd865f20ce6ee293dbb4c102fe930f2a46ec09daa25ec0662e5af2c41060/regex-2026.9.3-cp310-cp310-manylinux_2_31_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:d36e9097a1bc6eebe8858216ccd2326f561662de4e50c27533452491c1cf1685" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/41/bf/28c8ab87ac526784173d84a7b83fdaf8192037051660415b96f732bf2515/regex-2026.9.3-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:9c407afee6ea4caa313e815814e76d8447fcd32f81e3331d7937c2d33ab80c1b" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f7/f3/8c3704dc3a477d3974e4ddac1f8722a9da3847bf45474821ac3e06289b1f/regex-2026.9.3-cp310-cp310-musllinux_1_2_ppc64le.whl", hash = "sha256:82c27460ff2ea683159a204db2f9ce0f9549dec7070aa0809fbc36226bac1816" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/39/c0/83457e7847eeda7d53bb4e8f6e2ceddb96002303d4b670f1cf87310cc029/regex-2026.9.3-cp310-cp310-musllinux_1_2_riscv64.whl", hash = "sha256:5e49096c90364317897b8d9fe97e2f86063dc0fc0bcd352017ea6fdd703ff25d" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/68/48/4b23395c8d9e9cd004e0785f270259c65a3185118a527ab4b97df842261f/regex-2026.9.3-cp310-cp310-musllinux_1_2_s390x.whl", hash = "sha256:11f9b104fa7b23f736b50fe1980a1422eb4641865e82614a25413deabccae575" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/e7/58/0912f7fc2220e69a05ea8f4bfd647d1c4017bf37c6d45f30e107367bdc30/regex-2026.9.3-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:92e06a5ecabd6e8352da58b9201ae241a1e7382c1419defa9d2f64ad4ea6abf2" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/e6/56/194a09928d12c86956996ce87408885588f58a88ada042594b3cb196f5f7/regex-2026.9.3-cp310-cp310-win32.whl", hash = "sha256:6ff5a98456194621f757d6226f88035c00ebbeab0a9095dc9b5a9ec5cc94b50b" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/d5/ac/e59cb72afa57b509346d12e36bf62ecc4322ca5588494cd1b2aee1876247/regex-2026.9.3-cp310-cp310-win_amd64.whl", hash = "sha256:14f8969a92ed847f78e8eed81c6a0384a9e8058a56eb659f83ddb59879c2e4e3" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/85/3a/2d1253c32f2f5059398b943329b920748efa062c25b7bcafa9b9334c5931/regex-2026.9.3-cp310-cp310-win_arm64.whl", hash = "sha256:32a32d2664e602b20e4b9c11234cb32f2e985323e453b2b396ea4ae686d82052" },
+]
+
+[[package]]
 name = "requests"
 version = "2.32.5"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -1346,6 +1535,52 @@ dependencies = [
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/53/2e/734e1813f929ce562702f59283d5e585655eb2208ba97987549a5fc7fb68/resampy-0.4.2.tar.gz", hash = "sha256:0a469e6ddb89956f4fd6c88728300e4bbd186fae569dd4fd17dae51a91cbaa15" }
 wheels = [
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f2/d3/5209fd2132452f199b1ddf0d084f9fd5f5f910840e3b282f005b48a503e1/resampy-0.4.2-py3-none-any.whl", hash = "sha256:4340b6c4e685a865621dfcf016e2a3dd49d865446b6025e30fe88567f22e052e" },
+]
+
+[[package]]
+name = "rotary-embedding-torch"
+version = "0.3.5"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "einops" },
+    { name = "torch" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/a6/2a/1a48c58df620822ffecffd5e1898708b5086a2d2b8b1b47f531bc7c25d00/rotary-embedding-torch-0.3.5.tar.gz", hash = "sha256:87f21eb4178dd82ff149303f754e39adde8b6ab1f8b797d6ca547267f359dc3a" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/75/24/4ee455d4a1ea6cb66e937187383c1d28abdf63e4895118a3cbe5c5347517/rotary_embedding_torch-0.3.5-py3-none-any.whl", hash = "sha256:93f92f4ea1881439ce1f13ccf7b27d090833eb4984982ae93a7f1181575f9b29" },
+]
+
+[[package]]
+name = "ruamel-yaml"
+version = "0.19.1"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/c7/3b/ebda527b56beb90cb7652cb1c7e4f91f48649fbcd8d2eb2fb6e77cd3329b/ruamel_yaml-0.19.1.tar.gz", hash = "sha256:53eb66cd27849eff968ebf8f0bf61f46cdac2da1d1f3576dd4ccee9b25c31993" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/b8/0c/51f6841f1d84f404f92463fc2b1ba0da357ca1e3db6b7fbda26956c3b82a/ruamel_yaml-0.19.1-py3-none-any.whl", hash = "sha256:27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93" },
+]
+
+[[package]]
+name = "safetensors"
+version = "0.8.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/45/06/f955dbbb1859e3bd23c8ac6141af5106e7ad5fedec4a3a6e3d60f94b7001/safetensors-0.8.0.tar.gz", hash = "sha256:fabaf3e0f18a6618d9b36560682562157f77c2b71fcffc7b432be2baed9d753d" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/39/a0/f718cda65b05407d228f97602cf60dca269c979867aa5beb25410de26cd3/safetensors-0.8.0-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:c554f85858e05226d3c2828e32395e677434685d6d94594a41643361c5e837f0" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f5/b1/fa7c600e7dceae12e9606c7578cbc9ff1e1ed55844883ee5c92205e86226/safetensors-0.8.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:c80201d22cbf405b80647a60ada77bba06c8fba2da2743ba1e89cdcc39a81f25" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/09/7d/65a7de0af421317bb36a067241e4235fff194eed60b961ed6d3f59a3fc60/safetensors-0.8.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7a46e5ff292c356d6991e60942ba7f79817682d3a2cef0702136448cb9c4d235" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/91/4f/3175c9d75634e0e0dda0082794193521035edd7c70a6f212bf33ca06ddf4/safetensors-0.8.0-cp310-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:4124502b78f03534117c848f87a39b8f31e577b15eff423bf8bfb95f2a8c30d0" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/20/87/846c289e7aa2299eff406335717cf43ce8777194ece8aad75772e0411615/safetensors-0.8.0-cp310-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:7bc0a787ba8a35be368ee3574edfa2b1ad389eebd0a72e482ae275490e3f6c98" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/76/22/8d64d9df2c45d5ded401df889d0ad90882804ca172d79ec4f0df8f727fe0/safetensors-0.8.0-cp310-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:040070828e36dc8e122178bbbd5830ff9e97920affb84cbe0f46442497bed358" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/28/50/f203ff3a3ddfe19308efc83c5a3a29ed02bf786732ec35e68bf9162f3365/safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fd6f3f93c9a0a7cc2788ee63fb763353d4bd2e89b0751bc78fcf7dda00bea774" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/46/fb/cdaed17ceb2948784fd9c36b6fd3e951b608547cea81a48e8ee6f8cfdfcb/safetensors-0.8.0-cp310-abi3-manylinux_2_31_riscv64.whl", hash = "sha256:fcdd41ec4628fee5799f807c73c353629130fbd942aa23d83c623dd6c9d52d78" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/0d/49/1e15de264dcc3b77943d2d0c56a95809956883b1c2d6d585c792523f180b/safetensors-0.8.0-cp310-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:8e9f537aa183a38ace122d27303dcd986b26bd2a7591f9181d7f0c396f4677ca" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/2a/43/bf38443278eab4b1be1fce2931e2b012ad9cb7df52ada751d0aab8f7659a/safetensors-0.8.0-cp310-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:87eec7ffed2b809f05a398a8becb7d013f19f7837cd15d9748580d6cf30dbaf4" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/72/e3/68cd3fa5b48488e84add63e04cb12f3bc28ae4638c06d4508c6e88823d0e/safetensors-0.8.0-cp310-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:4a95ae2b05d7726d751da4ebf626a2ca782b706e101bd894c95bc2450b1cffcc" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/29/4b/1c19c509d56e01f4fbb3d0a2e597450f6cc04d1d56cf52defb0a62dfd715/safetensors-0.8.0-cp310-abi3-musllinux_1_2_i686.whl", hash = "sha256:3ae091f16662658bdc019a4ff6cb4c085bb7d725eb5978b183ffd265863b6d2d" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/27/43/41c1621732edd934d868a00d1b891584c892a7b62a9aab82ea5a0a5623ee/safetensors-0.8.0-cp310-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:8e080062fcde23be189565e1c3305d16751a218ecf9412c8601e64204eb6f846" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/8e/3f/73ccf82579412b4a71c4ca673f10b5f1f888d7cf5af7fe24f27d30307be4/safetensors-0.8.0-cp310-abi3-win32.whl", hash = "sha256:2ddf52eac562eda224f99acfa7889d02968c1fd59a5b011ae7d8137c37e9c02d" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/1b/6d/3fba214c1e5e0f69991677ec3bc17023f0421776975e1de0c682dca475e2/safetensors-0.8.0-cp310-abi3-win_amd64.whl", hash = "sha256:096ec1a98435df7beb08853bb5aa9081a84f23d0adc67ed1a0a10550f608373f" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/8d/fc/7eedc3510d97878876e32774eebbeb61c43f148a96e915c84229a3e967aa/safetensors-0.8.0-cp310-abi3-win_arm64.whl", hash = "sha256:f7838e5135a406ad3e02efdcb8cf2e5397d368b0154537c4fec682dbc544d452" },
 ]
 
 [[package]]
@@ -1382,18 +1617,22 @@ wheels = [
 
 [[package]]
 name = "scipy"
-version = "1.9.3"
+version = "1.15.3"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
 dependencies = [
     { name = "numpy" },
 ]
-sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/0a/2e/44795c6398e24e45fa0bb61c3e98de1cfea567b1b51efd3751e2f7ff9720/scipy-1.9.3.tar.gz", hash = "sha256:fbc5c05c85c1a02be77b1ff591087c83bc44579c6d2bd9fb798bb64ea5e1a027" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/0f/37/6964b830433e654ec7485e45a00fc9a27cf868d622838f6b6d9c5ec0d532/scipy-1.15.3.tar.gz", hash = "sha256:eae3cf522bc7df64b42cad3925c876e1b0b6c35c1337c93e12c0f366f55b0eaf" }
 wheels = [
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/fb/ba/1733dbbc19f2aa07d100cfa220bcc83a3977bc5c9f0a5ad262dae1f3ab90/scipy-1.9.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:1884b66a54887e21addf9c16fb588720a8309a57b2e258ae1c7986d4444d3bc0" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/40/0e/3ff193b6ba6a0a6f13f8d367e8976370232e769bd609c8c11d86e0353adf/scipy-1.9.3-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:83b89e9586c62e787f5012e8475fbb12185bafb996a03257e9675cd73d3736dd" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ce/28/635391e72e24bd3f4a91e374f4a186a5e4ecc95f23d8a55c9b0d25777cf7/scipy-1.9.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1a72d885fa44247f92743fc20732ae55564ff2a519e8302fb7e18717c5355a8b" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/59/0b/8a9acfc5c36bbf6e18d02f3a08db5b83bebba510be2df3230f53852c74a4/scipy-1.9.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d01e1dd7b15bd2449c8bfc6b7cc67d630700ed655654f0dfcf121600bad205c9" },
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/cf/0e/3f1685c1fcb5dfe35ec027a5fc7a29e8818c61b2cc7fa207b4fc7b959f52/scipy-1.9.3-cp310-cp310-win_amd64.whl", hash = "sha256:68239b6aa6f9c593da8be1509a05cb7f9efe98b80f43a5861cd24c7557e98523" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/78/2f/4966032c5f8cc7e6a60f1b2e0ad686293b9474b65246b0c642e3ef3badd0/scipy-1.15.3-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:a345928c86d535060c9c2b25e71e87c39ab2f22fc96e9636bd74d1dbf9de448c" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/a0/6e/0c3bf90fae0e910c274db43304ebe25a6b391327f3f10b5dcc638c090795/scipy-1.15.3-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:ad3432cb0f9ed87477a8d97f03b763fd1d57709f1bbde3c9369b1dff5503b253" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ea/b1/4deb37252311c1acff7f101f6453f0440794f51b6eacb1aad4459a134081/scipy-1.15.3-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:aef683a9ae6eb00728a542b796f52a5477b78252edede72b8327a886ab63293f" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/38/7d/f457626e3cd3c29b3a49ca115a304cebb8cc6f31b04678f03b216899d3c6/scipy-1.15.3-cp310-cp310-macosx_14_0_x86_64.whl", hash = "sha256:1c832e1bd78dea67d5c16f786681b28dd695a8cb1fb90af2e27580d3d0967e92" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/db/0a/92b1de4a7adc7a15dcf5bddc6e191f6f29ee663b30511ce20467ef9b82e4/scipy-1.15.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:263961f658ce2165bbd7b99fa5135195c3a12d9bef045345016b8b50c315cb82" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/8e/6d/41991e503e51fc1134502694c5fa7a1671501a17ffa12716a4a9151af3df/scipy-1.15.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9e2abc762b0811e09a0d3258abee2d98e0c703eee49464ce0069590846f31d40" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/25/e1/3df8f83cb15f3500478c889be8fb18700813b95e9e087328230b98d547ff/scipy-1.15.3-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:ed7284b21a7a0c8f1b6e5977ac05396c0d008b89e05498c8b7e8f4a1423bba0e" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/93/3e/b3257cf446f2a3533ed7809757039016b74cd6f38271de91682aa844cfc5/scipy-1.15.3-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:5380741e53df2c566f4d234b100a484b420af85deb39ea35a1cc1be84ff53a5c" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/d1/84/55bc4881973d3f79b479a5a2e2df61c8c9a04fcb986a213ac9c02cfb659b/scipy-1.15.3-cp310-cp310-win_amd64.whl", hash = "sha256:9d61e97b186a57350f6d6fd72640f9e99d5a4a2b8fbf4b9ee9a841eab327dc13" },
 ]
 
 [[package]]
@@ -1407,6 +1646,23 @@ dependencies = [
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ec/bb/e69e5e628d43f118e0af4fc063c20058faa8635c95a1296764acc8167e27/screeninfo-0.8.1.tar.gz", hash = "sha256:9983076bcc7e34402a1a9e4d7dabf3729411fd2abb3f3b4be7eba73519cd2ed1" }
 wheels = [
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/6e/bf/c5205d480307bef660e56544b9e3d7ff687da776abb30c9cb3f330887570/screeninfo-0.8.1-py3-none-any.whl", hash = "sha256:e97d6b173856edcfa3bd282f81deb528188aff14b11ec3e195584e7641be733c" },
+]
+
+[[package]]
+name = "segmentation-models-pytorch"
+version = "0.3.3"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "efficientnet-pytorch" },
+    { name = "pillow" },
+    { name = "pretrainedmodels" },
+    { name = "timm" },
+    { name = "torchvision" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/df/c1/99939498a3dc2a25c9b6a6d8659a343b795a9cd914fcec4190320804506f/segmentation_models_pytorch-0.3.3.tar.gz", hash = "sha256:b3b21ab4cd26a6b2b9e7a6ed466ace6452eb26ed3c31ae491ea2d7cbb01e384b" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/cb/70/4aac1b240b399b108ce58029ae54bc14497e1bbc275dfab8fd3c84c1e35d/segmentation_models_pytorch-0.3.3-py3-none-any.whl", hash = "sha256:b4317d6f72cb1caf4b7e1d384096970e202600275f54deb8e774fc04d6c8b82e" },
 ]
 
 [[package]]
@@ -1454,6 +1710,20 @@ dependencies = [
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/7b/49/eaf2bc7cbbca5c6973b6a332de233bcedd333182f3b9932c8442b7b87bd1/soundstretch-1.2.tar.gz", hash = "sha256:2c3d0873cbb1848b3c89be5da4c150ce376d123fd99af3c19cffa206748bea0f" }
 
 [[package]]
+name = "spafe"
+version = "0.3.2"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/b2/8a/cbd93b4b566201231aec81caf688a7c7f9e4432339841e84b4ce2a8d26f4/spafe-0.3.2.tar.gz", hash = "sha256:46eb77e44dec1951f0f01f863bfe6420519860e8e312ed57ed713bac66823b5a" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/3c/07/10707dae2f307fdcc3c41f28c22dfd3e3d4130b92fe32fc078838814710b/spafe-0.3.2-py3-none-any.whl", hash = "sha256:195ccddf5c0692ee8c5691bea06c1bc224ac31c0e5937099b8ea89b87a24bd7e" },
+]
+
+[[package]]
 name = "statsmodels"
 version = "0.15.0"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
@@ -1497,6 +1767,52 @@ wheels = [
 ]
 
 [[package]]
+name = "timm"
+version = "0.9.2"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "huggingface-hub" },
+    { name = "pyyaml" },
+    { name = "safetensors" },
+    { name = "torch" },
+    { name = "torchvision" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/90/79/f79ebb37aab0815a67e025d3fd2ae94b02a4d6078ba9ddc8aed9adc6fb25/timm-0.9.2.tar.gz", hash = "sha256:d0977cc5e02c69bda979fca8b52aa315a5f2cb64ebf8ad2c4631b1e452762c14" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/29/90/94f5deb8d76e24a89813aef95e8809ca8fd7414490428480eda19b133d4a/timm-0.9.2-py3-none-any.whl", hash = "sha256:8da40cc58ed32b0622bf87d8714f9b7023398ba4cfa8fa678578d2aefde4a909" },
+]
+
+[[package]]
+name = "tokenizers"
+version = "0.14.1"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "huggingface-hub" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/b2/b9/bf025d763bbdd333cb88bedb23426f932c5b4a6ce6f033c498517fad5b90/tokenizers-0.14.1.tar.gz", hash = "sha256:ea3b3f8908a9a5b9d6fc632b5f012ece7240031c44c6d4764809f33736534166" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f4/3e/3e8800424cee3d3097f84ca1a70311a4fdf14646f6cff934512c619c9ebe/tokenizers-0.14.1-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:04ec1134a18ede355a05641cdc7700f17280e01f69f2f315769f02f7e295cf1e" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ec/2d/b0ce807327959036aad8431304a1e4a115efe678d68920f6cd192152c17b/tokenizers-0.14.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:638abedb39375f0ddce2de536fc9c976639b2d1b7202d715c2e7a25f0ebfd091" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/94/ff/c16923e36a620f7d25751904cd40ec2abaefc76c795ff490fc217abcae84/tokenizers-0.14.1-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:901635098565773a44f74068639d265f19deaaca47ea77b428fd9bee13a61d87" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/ff/bc/e1354f34c1a83ddceaa66a0027fad01959f28cfbc26a203631d3a88bd80f/tokenizers-0.14.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:72e95184bf5b9a4c08153ed07c16c130ff174835c9a1e6ee2b311be758c8b3ef" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/61/13/df6b0b6bb2c29197b6ab1b62e61b979e76ce1b7c079fb6f1efcf5ce6e92a/tokenizers-0.14.1-cp310-cp310-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:ebefbc26ccff5e96ae7d40772172e7310174f9aa3683d2870a1882313ec3a4d5" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/9b/0f/6f3bc4f60f5769c897094183fbf28f03eeca86e61831af0f739b576a898c/tokenizers-0.14.1-cp310-cp310-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:d3a6330c9f1deda22873e8b4ac849cc06d3ff33d60b3217ac0bb397b541e1509" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f2/b1/2c9bda0be70f3bf83d20d05668646bea626ff33553363afa0a984806c740/tokenizers-0.14.1-cp310-cp310-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:6cba7483ba45600346a35c466bde32327b108575022f73c35a0f7170b5a71ae2" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/a7/7b/c1f643eb086b6c5c33eef0c3752e37624bd23e4cbc9f1332748f1c6252d1/tokenizers-0.14.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:60fec380778d75cbb492f14ca974f11f37b41d53c057b9c8ba213315b86e1f84" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/a7/d0/1e492762398d10cb0f2d7fb979ce0a58347de71d38336ba1b1b087fac015/tokenizers-0.14.1-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:930c19b699dd7e1077eac98967adc2fe5f0b104bd96cc1f26778ab82b31ceb24" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/16/2c/f6bb90547b89d46a39bdc758cb82e5634fed3acd6381e701ef59149f4ef8/tokenizers-0.14.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:a1e30a13376db5329570e09b14c8eb36c017909ed7e88591ca3aa81f3c7d6f32" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/cc/9d/d5f671c53aa4d79f5fa94daf7adfc07b8456c0cfbca94d10eb104b96f8a6/tokenizers-0.14.1-cp310-none-win32.whl", hash = "sha256:370b5b86da9bddbe65fa08711f0e8ffdf8b0036558178d1a31dfcb44efcde72a" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/92/02/15556b80450301d2ef014bc598df4352bfb39631c5fcff758d8e0ac9f065/tokenizers-0.14.1-cp310-none-win_amd64.whl", hash = "sha256:c2c659f2106b6d154f118ad1b700e68148c46c59b720f04867b1fc5f26a85060" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/2e/54/4e23656820078348f4bc22a353d5ca8a118a37909f787a5a7981ff4d27b6/tokenizers-0.14.1-pp310-pypy310_pp73-macosx_10_7_x86_64.whl", hash = "sha256:5f9afdcf701a1aa3c41e0e748c152d2162434d61639a1e5d8523ecf60ae35aea" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/d2/f2/a3d2e0a4ba4f33c77b39e0497b653f8ea61abbbb7fb575a96a86aa19b931/tokenizers-0.14.1-pp310-pypy310_pp73-macosx_11_0_arm64.whl", hash = "sha256:6859d81243cd09854be9054aca3ecab14a2dee5b3c9f6d7ef12061d478ca0c57" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/c1/f5/9311011243702a2dc833b5b3ddd556884748ea82ceb779a4e0e9eebc975f/tokenizers-0.14.1-pp310-pypy310_pp73-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:7975178f9478ccedcf613332d5d6f37b67c74ef4e2e47e0c965597506b921f04" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f6/dd/2d77cce54578f5dbd527df39f91774dec68c4dbd7eeef1b34b84fb3a3e27/tokenizers-0.14.1-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0ce2f0ff2e5f12ac5bebaa690606395725239265d7ffa35f35c243a379316297" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/98/21/296282e5f0e1c1ddaf2fd20d337437eb43810892c76e1436a2cdbe5f9889/tokenizers-0.14.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4c7cfc3d42e81cda802f93aa9e92caf79feaa1711426e28ce620560b8aaf5e4d" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/28/8f/d1b17d547a33ff2a56c9bd79d8fcf6d1d9194800b0f34c602954e66c05cb/tokenizers-0.14.1-pp310-pypy310_pp73-musllinux_1_1_aarch64.whl", hash = "sha256:67d3adff654dc7f7c7091dd259b3b847fe119c08d0bda61db91e2ea2b61c38c0" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/03/62/71982b18db663f8092703e5f62891f9b34c4627dda47b4f8bc1f8018e9b6/tokenizers-0.14.1-pp310-pypy310_pp73-musllinux_1_1_x86_64.whl", hash = "sha256:956729b7dd599020e57133fb95b777e4f81ee069ff0a70e80f6eeac82658972f" },
+]
+
+[[package]]
 name = "torch"
 version = "2.11.0+cu128"
 source = { registry = "https://download.pytorch.org/whl/cu128" }
@@ -1523,18 +1839,86 @@ wheels = [
 ]
 
 [[package]]
-name = "torchmetrics"
-version = "1.9.0"
+name = "torch-audiomentations"
+version = "0.12.0"
 source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
 dependencies = [
-    { name = "lightning-utilities" },
+    { name = "julius" },
+    { name = "torch" },
+    { name = "torch-pitch-shift" },
+    { name = "torchaudio" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/31/8d/2f8fd7e34c75f5ee8de4310c3bd3f22270acd44d1f809e2fe7c12fbf35f8/torch_audiomentations-0.12.0.tar.gz", hash = "sha256:b02d4c5eb86376986a53eb405cca5e34f370ea9284411237508e720c529f7888" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/21/9d/1ee04f49c15d2d632f6f7102061d7c07652858e6d91b58a091531034e84f/torch_audiomentations-0.12.0-py3-none-any.whl", hash = "sha256:1b80b91d2016ccf83979622cac8f702072a79b7dcc4c2bee40f00b26433a786b" },
+]
+
+[[package]]
+name = "torch-optimizer"
+version = "0.1.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "pytorch-ranger" },
+    { name = "torch" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/76/87/12f8646a46018d8c84cc74456f82aa263f55eb93b6f96c195f85cd0d2f72/torch-optimizer-0.1.0.tar.gz", hash = "sha256:3f67b71838a23a149afa7b3e1d9d7d3fd7c83b5758c8f3744900de1584969cf5" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/af/0f/bc49a0f714a1896b80f31db9ba82eebcb2bad9e0f5757184574f8ecfe2f1/torch_optimizer-0.1.0-py3-none-any.whl", hash = "sha256:b7adaed38b66a5c5105a59b30a71c4ab7c9954baf0acabd969fee3dac954657d" },
+]
+
+[[package]]
+name = "torch-pitch-shift"
+version = "1.2.5"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "primepy" },
+    { name = "torch" },
+    { name = "torchaudio" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/79/a6/722a832bca75d5079f6731e005b3d0c2eec7c6c6863d030620952d143d57/torch_pitch_shift-1.2.5.tar.gz", hash = "sha256:6e1c7531f08d0f407a4c55e5ff8385a41355c5c5d27ab7fa08632e51defbd0ed" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/27/4c/96ac2a09efb56cc3c41fb3ce9b6f4d8c0604499f7481d4a13a7b03e21382/torch_pitch_shift-1.2.5-py3-none-any.whl", hash = "sha256:6f8500cbc13f1c98b11cde1805ce5084f82cdd195c285f34287541f168a7c6a7" },
+]
+
+[[package]]
+name = "torch-stoi"
+version = "0.2.3"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pystoi" },
+    { name = "torch" },
+    { name = "torchaudio" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/47/a4/23be9a35b6c5b5c4547d24c52b07f4a5d55406a5ae43d9cce09f2352d75a/torch_stoi-0.2.3.tar.gz", hash = "sha256:228207b8d63548336c5520b156f1e6b30d3ae3db1fb3c41999f01aee087c5f85" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/a3/92/ead346e904390a53e71b5da2df7e7839abb16e967ba07fa15addf1f9f37c/torch_stoi-0.2.3-py3-none-any.whl", hash = "sha256:6eee85e33b42fe843a2150de46000f72e7b87cbeb19ae6ab9bbd94b6ec6b3cd2" },
+]
+
+[[package]]
+name = "torchaudio"
+version = "2.11.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/8c/d9/357eb5fe4e19a861e6fa1af4d9f535e8fa8692336e6cf436e8a21262e054/torchaudio-2.11.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:6ebb59c694909eccb5d61b7cc199d297692012c43286e36d92983aa7bad7586d" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/2a/79/90de77e73f395bba2fe477f8e82e4ae1d14d6452a706838765e850a5e80c/torchaudio-2.11.0-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:be7ad472acb16d16e98c005f0219b0db06a47dfe8f7b4d177062e1638f871e3b" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/66/dc/5757ed7d8d11a6c14336bcb54e63980979f00005555fec80fb4aa4de5eff/torchaudio-2.11.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:5847fe2022b17c6580aeb39c8797a443411cc09edfd9183cd50ac1a3b8ccf97c" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/cf/f4/8ce2417eac66296e45b7aaa69858403fb6a52b1323f8635ec37b4b0f1fa3/torchaudio-2.11.0-cp310-cp310-win_amd64.whl", hash = "sha256:7e2da1df4f6fe885c46db350a0dc90a0dff4b54541dff8846faa904d255e2bfe" },
+]
+
+[[package]]
+name = "torchmetrics"
+version = "0.11.4"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
     { name = "numpy" },
     { name = "packaging" },
     { name = "torch" },
 ]
-sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/81/34/39b8b749333db56c0585d7a11fa62a283c087bb1dfc897d69fb8cedbefb1/torchmetrics-1.9.0.tar.gz", hash = "sha256:a488609948600df52d3db4fcdab02e62aab2a85ef34da67037dc3e65b8512faa" }
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f3/ed/9f76e2d65d2e6d67a0ba097f34f4b618fb7466d731476d3d3440dfe2cb8e/torchmetrics-0.11.4.tar.gz", hash = "sha256:1fe45a14b44dd65d90199017dd5a4b5a128d56a8a311da7916c402c18c671494" }
 wheels = [
-    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/c3/a2/c7f6ebf546f8f644edf0f999aa98ece106986a77a7b922316bf6414ff825/torchmetrics-1.9.0-py3-none-any.whl", hash = "sha256:bfdcbff3dd1d96b3374bb2496eb39f23c4b28b8a845b6a18c313688e0d2d9ca1" },
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/fb/47/6e9f9b41c48750a45ad07cc6d43a2979bfc09e6989656aece97cc59cbef1/torchmetrics-0.11.4-py3-none-any.whl", hash = "sha256:45f892f3534e91f3ad9e2488d1b05a93b7cb76b7d037969435a41a1f24750d9a" },
 ]
 
 [[package]]
@@ -1563,6 +1947,27 @@ dependencies = [
 sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/21/3b/6c24bec5be5e743ffd99576daa5cc077722fc7d5bbc00bd133fa0c698dc6/tqdm-4.70.0.tar.gz", hash = "sha256:55b0b0dbd97462d06ebee91e4dac24ed4d4702be82b24f07e6c1d27e08cea220" }
 wheels = [
     { url = "https://mirrors.nju.edu.cn/pypi/web/packages/f9/1c/01bfd571a64e7f270e6bab5e33777debe0edc56759233ce84f27dec92d14/tqdm-4.70.0-py3-none-any.whl", hash = "sha256:7f585706bfddbdebf89daac705b2dfcc16890130727d3197ca62c732b4310953" },
+]
+
+[[package]]
+name = "transformers"
+version = "4.35.0"
+source = { registry = "https://mirrors.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "filelock" },
+    { name = "huggingface-hub" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "regex" },
+    { name = "requests" },
+    { name = "safetensors" },
+    { name = "tokenizers" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://mirrors.nju.edu.cn/pypi/web/packages/53/36/a6479f41d5b998cd1cd4b9e3f42d3da4ca93b448c7d10a65f27d9cbf6dca/transformers-4.35.0.tar.gz", hash = "sha256:e4b41763f651282fc979348d3aa148244387ddc9165f4b18455798c770ae23b9" }
+wheels = [
+    { url = "https://mirrors.nju.edu.cn/pypi/web/packages/9a/06/e4ec2a321e57c03b7e9345d709d554a52c33760e5015fdff0919d9459af0/transformers-4.35.0-py3-none-any.whl", hash = "sha256:45aa9370d7d9ba1c43e6bfa04d7f8b61238497d4b646e573fd95e597fe4040ff" },
 ]
 
 [[package]]
@@ -1598,7 +2003,10 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "altgraph" },
+    { name = "asteroid" },
+    { name = "audiomentations" },
     { name = "audioread" },
+    { name = "beartype" },
     { name = "certifi" },
     { name = "cffi" },
     { name = "cryptography" },
@@ -1620,6 +2028,7 @@ dependencies = [
     { name = "opencv-python" },
     { name = "pillow" },
     { name = "playsound" },
+    { name = "protobuf" },
     { name = "psutil" },
     { name = "pydub" },
     { name = "pyglet" },
@@ -1629,13 +2038,19 @@ dependencies = [
     { name = "pytorch-lightning" },
     { name = "pyyaml" },
     { name = "resampy" },
+    { name = "rotary-embedding-torch" },
+    { name = "ruamel-yaml" },
     { name = "samplerate" },
     { name = "scipy" },
     { name = "screeninfo" },
+    { name = "segmentation-models-pytorch" },
     { name = "setuptools" },
     { name = "soundfile", marker = "sys_platform != 'darwin'" },
     { name = "soundstretch" },
+    { name = "spafe" },
     { name = "torch" },
+    { name = "torch-audiomentations" },
+    { name = "transformers" },
     { name = "urllib3" },
     { name = "wget" },
 ]
@@ -1648,7 +2063,10 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "altgraph", specifier = "==0.17.3" },
+    { name = "asteroid", specifier = "==0.7.0" },
+    { name = "audiomentations", specifier = "==0.24.0" },
     { name = "audioread", specifier = "==3.0.0" },
+    { name = "beartype", specifier = "==0.14.1" },
     { name = "certifi", specifier = "==2022.12.7" },
     { name = "cffi", specifier = "==1.15.1" },
     { name = "cryptography", specifier = "==3.4.6" },
@@ -1664,12 +2082,13 @@ requires-dist = [
     { name = "natsort", specifier = "==8.2.0" },
     { name = "numpy", specifier = "==1.23.5" },
     { name = "omegaconf", specifier = "==2.2.3" },
-    { name = "onnx", specifier = ">=1.19.0" },
+    { name = "onnx", specifier = ">=1.17.0" },
     { name = "onnx2pytorch", specifier = ">=0.5.3" },
     { name = "onnxruntime-gpu", specifier = "==1.23.2" },
     { name = "opencv-python", specifier = "==4.6.0.66" },
     { name = "pillow", specifier = "==9.3.0" },
     { name = "playsound", specifier = "==1.2.2" },
+    { name = "protobuf", specifier = "==3.20.3" },
     { name = "psutil", specifier = "==5.9.4" },
     { name = "pydub", specifier = "==0.25.1" },
     { name = "pyglet", specifier = "==1.5.23" },
@@ -1679,13 +2098,19 @@ requires-dist = [
     { name = "pytorch-lightning", specifier = "==2.0.0" },
     { name = "pyyaml", specifier = "==6.0" },
     { name = "resampy", specifier = "==0.4.2" },
+    { name = "rotary-embedding-torch", specifier = "==0.3.5" },
+    { name = "ruamel-yaml", specifier = ">=0.19.1" },
     { name = "samplerate", specifier = "==0.1.0" },
-    { name = "scipy", specifier = "==1.9.3" },
+    { name = "scipy", specifier = ">=1.9.3" },
     { name = "screeninfo", specifier = "==0.8.1" },
+    { name = "segmentation-models-pytorch", specifier = "==0.3.3" },
     { name = "setuptools", specifier = "==81.0.0" },
     { name = "soundfile", marker = "sys_platform != 'darwin'", specifier = "==0.11.0" },
     { name = "soundstretch", specifier = "==1.2" },
+    { name = "spafe", specifier = "==0.3.2" },
     { name = "torch", specifier = "==2.11.0", index = "https://download.pytorch.org/whl/cu128" },
+    { name = "torch-audiomentations", specifier = ">=0.12.0" },
+    { name = "transformers", specifier = "==4.35.0" },
     { name = "urllib3", specifier = "==1.26.12" },
     { name = "wget", specifier = "==3.2" },
 ]
