@@ -1,5 +1,54 @@
 Most Recent Changes:
 
+~ Updated "Audio Tools" to include "Matchering".
+~ The "Align Tool" has been improved to line up inputs even when there are differences in timing, similar to what Utagoe does.
+  ~ The new Align Tool is still in progress, bugs are expected.
+  ~ The new Align Tool will be revamped in the final release.
+~ Integrated a right-click menu for entries in the batch process window specifically for Matchering & Align tool.
+~ Introduced a right-click option for Matchering & Align tool on the main window to directly access input folders.
+~ Addressed the anomaly where models would self-select in dropdowns.
+  ~ This seemed related to having a multitude of models. Revamped the dropdown menus entirely.
+~ Fixed splash screen closing issue.
+~ Demucs Pre-process Model settings properly reset to default
+~ MP3 encoder now uses LAME.
+~ Resolved the problem where using the "MDX23C_D1581" model as a pre-process model for Demucs conversions was leading to a "Key Error: 'Primary Stem'" error.
+~ Rectified the "missing file" error that was popping up when trying to convert using the Demucs v2 demucs model.
+~ Solved the problem in Demucs using the htdemucs_6s multi-stem model: when certain stems were selected and pitch-shift conversion was used, there was a KeyError, preventing the stem from being saved. The stem separation now works correctly, and files save to the intended destination.
+~ Adjusted the "Reset All Settings To Default" function to ensure it also resets the text of the Sample Mode slider.
+~ Made corrections so that if you activate Model Test Mode and then restart the app, the "Accept Any Input" option will not be inadvertently enabled.
+~ Addressed the ensemble issue with MDX23C models.
+~ Updated the "Select Stems" menu for 2 stem models under MDX23C.
+~ Revamped the MDXC23 Overlap Menu.
+~ Provided an option to decide the use of the VR denoise model in MDX-NET.
+  ~ Introduced a selection menu with choices: "None", "Standard", and "Denoise Model".
+~ Added an option to automatically deverb vocals for Demucs & MDX models. (does not work in ensemble mode at this time)
+~ Updated the Download Center to feature MDX23C models.
+~ Fixed the glitch where ensemble final outputs weren't saved.
+~ Enhanced align/matchering outputs to support Mp3 and flac.
+~ Refined tooltips for "Overlap" and "Segment Default".
+~ Ensured the download lists refresh properly even when there's no internet.
+~ Many more fixes.
+
+Change Log from UVR_Patch_7_11_23_20_51_BETA:
+
+~ Added support for MDX_C models.
+~ Added Multi-stem ensemble.
+~ Added Overlap mode for MDX-Net.
+~ Added Segment mode (now have the ability change the native chunk settings.)
+~ Added Pitch-shift conversions.
+~ Added the ability to toggle frequency matching for MDX-Net.
+~ Added the ability to toggle auto model param updates.
+~ Removed old chunking code, as it has been depreciated.
+
+Change Log going from UVR v5.4 to v5.5:
+
+Fixes & Changes:
+
+~ The progress bar is now fully synced up with every process in the application.
+~ Fixed low-resolution icon.
+~ Added the ability to download models manually if the application can't connect 
+   to the internet.
+~ Drag-n-drop is functional across all os platforms via the stand-alone installs.
 ~ Fixed Download Center model list issue.
 ~ Fixed audio clip in ensemble mode.
 ~ Fixed output model name issue in ensemble mode.
@@ -10,24 +59,10 @@ Most Recent Changes:
 ~ Added Mixer Mode for Demucs.
     ~ This option may improve separation for some 4-stem models.
 
-Fixes & Changes going from UVR v5.4 to v5.5:
-
-~ The progress bar is now fully synced up with every process in the application.
-~ Fixed low-resolution icon.
-~ Added the ability to download models manually if the application can't connect 
-   to the internet.
-~ Drag-n-drop is functional across all os platforms.
-~ Resolved mp3 tag issue in MacOS version.
-
 Performance:
 
 ~ Model load times are faster.
 ~ Importing/exporting audio files is faster.
-
-MacOS M1 Notes:
-
-~ The GPU Conversion checkbox will enable MPS for GPU acceleration. However,
-   only the VR Architecture models are currently compatible with it.
 
 New Options:
 
@@ -35,7 +70,7 @@ New Options:
    of the whole application. You can also load a saved setting or reset them to 
    the default.
 ~ Right-click menu - Allows for quick access to important options.
-~ Help Hints option - When enabled, users can hover over options to see a pop-up 
+~ Help Hints option - When enabled, users can hover over options to see pop-up 
    text that describes that option. The right-clicking option also allows copying 
    the "Help Hint" text.
 ~ Secondary Model Mode - This option is an expanded version of the "Demucs Model" 
@@ -43,7 +78,8 @@ New Options:
    in all three AI Networks and for any stem. Any model can now be Secondary, and 
    the user can choose the amount of influence it has on the final result.
 ~ Robust caching for ensemble mode, allowing for much faster processing times.
-~ Clicking the "Input" field will pop up a window allowing the user to review the selected audio inputs. Within this menu, users can:
+~ Clicking the "Input" field will pop-up a new window that allows the user to go 
+   through all of the selected audio inputs. Within this menu, users can:
     ~ Remove inputs.
     ~ Verify inputs.
     ~ Create samples of chosen inputs.
@@ -64,15 +100,15 @@ VR Architecture:
 
 MDX-NET:
 
-~ Denoise Output option results in cleaner results, 
+~ Denoise Output option - When enabled, this option results in cleaner results, 
    but the processing time will be longer. This option has replaced Noise Reduction.
-~ Spectral Inversion option uses spectral inversion techniques for a 
+~ Spectral Inversion option - This option uses spectral inversion techniques for a 
    cleaner secondary stem result. This option may slow down the audio export process.
 ~ Secondary stem now has the same frequency cut-off as the main stem.
 
 Demucs:
 
-~ Demucs v4 models are now supported, including the 6-stem model.
+~ Demucs v4 models are now supported, including the 6 stem model.
 ~ Ability to combine remaining stems instead of inverting selected stem with the 
    mixture only when a user does not select "All Stems".
 ~ A Pre-process model that allows the user to run an inference through a robust 

@@ -476,7 +476,7 @@ namespace eval ttk::theme::sun-valley-dark {
         ttk::style element create Combobox.field \
             image [list $images(button-rest) \
                 {readonly disabled} $images(button-disabled) \
-                {readonly pressed} $images(button-rest) \
+                {readonly pressed} $images(button-pressed) \
                 {readonly hover} $images(button-hover) \
                 readonly $images(button-rest) \
                 invalid $images(entry-invalid) \
