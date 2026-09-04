@@ -1,5 +1,9 @@
 # `lib_v5` upstream diff
 
+This is a frozen record of restoration commit
+`b83971f0d685032225204d33bc66e598056b6c83` (`restore from official pyc code`).
+Later commits intentionally diverge and are not reflected here.
+
 This document compares every restored architecture file with the exact upstream
 revision used as its source anchor. The restored files have been reformatted to
 remove known blank-line and final-newline noise; the differences below are the

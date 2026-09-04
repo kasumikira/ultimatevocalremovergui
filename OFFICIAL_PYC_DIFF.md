@@ -6,6 +6,11 @@ This document records the final comparison between the current repository and
 the Python 3.9 bytecode extracted from the official UVR executable
 `UVR_Patch_4_24_25_20_11_BETA` (UVR 5.6.1).
 
+This is a frozen record of restoration commit
+`b83971f0d685032225204d33bc66e598056b6c83` (`restore from official pyc code`).
+Later commits intentionally diverge from the official executable and are not
+reflected here.
+
 ## Baseline and method
 
 Official bytecode root:
@@ -17,13 +22,12 @@ D:\Download\UVR\UVR.exe_extracted\PYZ-00.pyz_extracted
 Repository commit at audit time:
 
 ```text
-b88172f72929e97b1521015624c4d1638c4a28e7
+b83971f0d685032225204d33bc66e598056b6c83
 ```
 
-The working tree contains uncommitted restoration changes, so the commit alone
-does not identify the audited source. The aggregate SHA-256 below covers the 44
-comparable `lib_v5` Python sources plus `separate.py`, sorted by repository path
-and framed with each path:
+The aggregate SHA-256 below covers the 44 comparable `lib_v5` Python sources
+plus `separate.py` in that commit, sorted by repository path and framed with
+each path:
 
 ```text
 source files: 45

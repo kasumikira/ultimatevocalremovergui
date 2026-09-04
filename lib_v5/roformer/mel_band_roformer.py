@@ -440,7 +440,7 @@ class MelBandRoformer(Module):
             normalized=stft_normalized
         )
 
-        freqs = torch.stft(torch.randn(1, 4096), **self.stft_kwargs, window=torch.ones(stft_n_fft), return_complex=True).shape[1]
+        freqs = stft_n_fft // 2 + 1
 
         # create mel filter bank
         # with librosa.filters.mel as in section 2 of paper
@@ -449,14 +449,10 @@ class MelBandRoformer(Module):
 
         mel_filter_bank = torch.from_numpy(mel_filter_bank_numpy)
 
-        # for some reason, it doesn't include the first freq? just force a value for now
+        # ensure the edge frequencies are covered without giving them artificial full weight
 
-        mel_filter_bank[0][0] = 1.
-
-        # In some systems/envs we get 0.0 instead of ~1.9e-18 in the last position,
-        # so let's force a positive value
-
-        mel_filter_bank[-1, -1] = 1.
+        mel_filter_bank[0, 0] = mel_filter_bank[0, 1] * 0.25
+        mel_filter_bank[-1, -1] = mel_filter_bank[-1, -2] * 0.25
 
         # binary as in paper (then estimated masks are averaged for overlapping regions)
 
@@ -508,10 +504,8 @@ class MelBandRoformer(Module):
         self.multi_stft_n_fft = stft_n_fft
         self.multi_stft_window_fn = multi_stft_window_fn
 
-        self.multi_stft_kwargs = dict(
-            hop_length=multi_stft_hop_size,
-            normalized=multi_stft_normalized
-        )
+        self.multi_stft_hop_length = multi_stft_hop_size
+        self.multi_stft_normalized = multi_stft_normalized
 
         self.match_input_audio_length = match_input_audio_length
 
@@ -709,9 +703,10 @@ class MelBandRoformer(Module):
             res_stft_kwargs = dict(
                 n_fft=max(window_size, self.multi_stft_n_fft),  # not sure what n_fft is across multi resolution stft
                 win_length=window_size,
+                hop_length=max(self.multi_stft_hop_length, window_size // 4),
+                normalized=self.multi_stft_normalized,
                 return_complex=True,
                 window=self.multi_stft_window_fn(window_size, device=device),
-                **self.multi_stft_kwargs,
             )
 
             recon_Y = torch.stft(rearrange(recon_audio, '... s t -> (... s) t'), **res_stft_kwargs)
