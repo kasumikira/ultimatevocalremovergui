@@ -1,24 +1,11 @@
 import torch
 import librosa
 import lib_v5.apollo_model_data as models
-from tqdm.auto import tqdm
+from lib_v5.verify_gpu_availability import *
 import numpy as np
 from gui_data.constants import *
-from separate import (get_gpu_info, clear_gpu_cache,
-    cuda_available, directml_available, mps_available
-)
-
 import warnings
 warnings.filterwarnings("ignore")
-
-if not is_macos:
-    import torch_directml # type:ignore
-
-DIRECTML_DEVICE, directml_available = get_gpu_info()
-is_choose_arch = cuda_available and directml_available
-is_directml_only = not cuda_available and directml_available
-is_cuda_only = cuda_available and not directml_available
-is_gpu_available = cuda_available or directml_available or mps_available
 
 def load_audio(file_path):
     audio, samplerate = librosa.load(file_path, mono=False, sr=44100)
@@ -41,31 +28,7 @@ def dBgain(audio, volume_gain_dB):
     gained_audio = audio * gain 
     return gained_audio
 
-def check_gpu_availability(is_gpu_conversion, device_set, is_use_directml):
-    device = CPU
-    is_other_gpu = False
-    #is_using_directml = False
-    
-    if is_gpu_conversion >= 0:
-        if mps_available:
-            device, is_other_gpu = MPS_DEVICE, True
-        else:
-            device_prefix = None
-            if device_set != DEFAULT:
-                device_prefix = DIRECTML_DEVICE if is_use_directml and directml_available else CUDA_DEVICE
-
-            if directml_available and is_use_directml:
-                device = torch_directml.device() if not device_prefix else f'{device_prefix}:{device_set}'
-                is_other_gpu = True
-                #is_using_directml = True
-            elif cuda_available and not is_use_directml:
-                device = CUDA_DEVICE if not device_prefix else f'{device_prefix}:{device_set}'
-                
-    return device, is_other_gpu
-            
-def restore_process(input_wav, ckpt_path, overlap=2, chunk_size=10, set_progress_bar=None, is_gpu_conversion=0, device_set=DEFAULT, is_use_directml=False, extracted_params=None, config=None):
-    
-    device, is_other_gpu = check_gpu_availability(is_gpu_conversion, device_set, is_use_directml)
+def restore_process(input_wav, ckpt_path, overlap=2, chunk_size=10, set_progress_bar=None, device="cuda", extracted_params=None, config=None):
 
     global progress_value
     progress_value = 0
@@ -85,7 +48,7 @@ def restore_process(input_wav, ckpt_path, overlap=2, chunk_size=10, set_progress
 
         iter_val = (0.90 / length * progress_value)
         iter_val = 0.99 if iter_val >= 1.0 else iter_val
-        set_progress_bar(0.1, iter_val)
+        set_progress_bar(0.0, iter_val)
 
     model = models.BaseModel.from_pretrain(ckpt_path, **extracted_params).to(device)
 

@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from functools import partial
 
+is_using_other_gpu = lambda device: not (device == "cpu" or device.startswith("cuda"))
+
 class STFT:
     def __init__(self, n_fft, hop_length, dim_f, device):
         self.n_fft = n_fft
@@ -12,8 +14,8 @@ class STFT:
 
     def __call__(self, x):
         
-        x_is_mps = not x.device.type in ["cuda", "cpu"]
-        if x_is_mps:
+        is_other_gpu = is_using_other_gpu(x.device.type)
+        if is_other_gpu:
             x = x.cpu()
 
         window = self.window.to(x.device)
@@ -24,15 +26,15 @@ class STFT:
         x = x.permute([0, 3, 1, 2])
         x = x.reshape([*batch_dims, c, 2, -1, x.shape[-1]]).reshape([*batch_dims, c * 2, -1, x.shape[-1]])
 
-        if x_is_mps:
+        if is_other_gpu:
             x = x.to(self.device)
 
         return x[..., :self.dim_f, :]
 
     def inverse(self, x):
         
-        x_is_mps = not x.device.type in ["cuda", "cpu"]
-        if x_is_mps:
+        is_other_gpu = is_using_other_gpu(x.device.type)
+        if is_other_gpu:
             x = x.cpu()
 
         window = self.window.to(x.device)
@@ -47,7 +49,7 @@ class STFT:
         x = torch.istft(x, n_fft=self.n_fft, hop_length=self.hop_length, window=window, center=True)
         x = x.reshape([*batch_dims, 2, -1])
 
-        if x_is_mps:
+        if is_other_gpu:
             x = x.to(self.device)
 
         return x
@@ -249,5 +251,3 @@ class TFC_TDF_net(nn.Module):
         x = self.stft.inverse(x)
 
         return x
-
-
