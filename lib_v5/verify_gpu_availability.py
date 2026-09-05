@@ -2,6 +2,7 @@ from gui_data.constants import *
 import torch
 import warnings
 import gc
+from importlib.metadata import PackageNotFoundError
 
 warnings.filterwarnings("ignore")
 
@@ -16,6 +17,12 @@ GPU_TYPE_CPU = "cpu"
 GPU_TYPE_NVIDIA_CUDA = "nvidia_cuda"
 GPU_TYPE_AMD_ROCM = "amd_rocm"
 GPU_TYPE_APPLE_MPS = "apple_mps"
+
+try:
+    import onnxruntime as _onnxruntime
+    onnxruntime_cuda_available = "CUDAExecutionProvider" in _onnxruntime.get_available_providers()
+except (PackageNotFoundError, ImportError, OSError, RuntimeError):
+    onnxruntime_cuda_available = False
 
 def clear_gpu_cache():
     gc.collect()

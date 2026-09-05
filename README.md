@@ -68,6 +68,8 @@ The CPU, CUDA, and ROCm extras are mutually exclusive. Start UVR after synchroni
 uv run python UVR.py
 ```
 
+The default PyPI index is explicitly configured in `pyproject.toml`. If PyPI is inaccessible, replace the `url` in the `[[tool.uv.index]]` entry named `pypi` with a trusted mirror.
+
 If you do not have FFmpeg or Rubber Band installed and want to avoid going through the process of installing them the long way, follow the instructions below.
 
 **FFmpeg Installation**

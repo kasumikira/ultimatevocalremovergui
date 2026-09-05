@@ -62,16 +62,16 @@ dependencies = [
 
 [project.optional-dependencies]
 cpu = [
-    "torch==2.11.0+cpu",
-    "torchvision==0.26.0+cpu",
-    "torchaudio==2.11.0+cpu",
+    "torch==2.11.0",
+    "torchvision==0.26.0",
+    "torchaudio==2.11.0",
     "onnxruntime==1.23.2",
 ]
 cuda = [
-    "torch==2.11.0+cu128",
-    "torchvision==0.26.0+cu128",
-    "torchaudio==2.11.0+cu128",
-    "onnxruntime-gpu==1.23.2",
+    "torch==2.11.0+cu128 ; sys_platform != 'darwin'",
+    "torchvision==0.26.0+cu128 ; sys_platform != 'darwin'",
+    "torchaudio==2.11.0+cu128 ; sys_platform != 'darwin'",
+    "onnxruntime-gpu==1.23.2 ; (sys_platform == 'win32' and platform_machine == 'AMD64') or (sys_platform == 'linux' and platform_machine == 'x86_64')",
 ]
 rocm = [
     "torch[device-all]==2.11.0+rocm7.14.1 ; (sys_platform == 'win32' and platform_machine == 'AMD64') or (sys_platform == 'linux' and platform_machine == 'x86_64')",
@@ -101,21 +101,33 @@ conflicts = [
         { extra = "rocm" },
     ],
 ]
+environments = [
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'linux' and platform_machine == 'aarch64'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
+
+# Replace this URL with a trusted PyPI mirror if needed.
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+explicit = false
 
 [tool.uv.sources]
 torch = [
     { index = "pytorch-cpu", extra = "cpu" },
-    { index = "pytorch-cu128", extra = "cuda" },
+    { index = "pytorch-cu128", extra = "cuda", marker = "sys_platform != 'darwin'" },
     { index = "amd-rocm", extra = "rocm" },
 ]
 torchvision = [
     { index = "pytorch-cpu", extra = "cpu" },
-    { index = "pytorch-cu128", extra = "cuda" },
+    { index = "pytorch-cu128", extra = "cuda", marker = "sys_platform != 'darwin'" },
     { index = "amd-rocm", extra = "rocm" },
 ]
 torchaudio = [
     { index = "pytorch-cpu", extra = "cpu" },
-    { index = "pytorch-cu128", extra = "cuda" },
+    { index = "pytorch-cu128", extra = "cuda", marker = "sys_platform != 'darwin'" },
     { index = "amd-rocm", extra = "rocm" },
 ]
 
@@ -132,7 +144,7 @@ explicit = true
 [[tool.uv.index]]
 name = "amd-rocm"
 url = "https://repo.amd.com/rocm/whl-multi-arch/"
-explicit = false
+default = true # workaround for horrible AMD repo
 ignore-error-codes = [403]
 
 [dependency-groups]

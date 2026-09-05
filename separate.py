@@ -176,7 +176,7 @@ class SeperateAttributes:
             self.is_gpu_conversion,
             self.device_set,
         )
-        if self.gpu_type == GPU_TYPE_NVIDIA_CUDA:
+        if onnxruntime_cuda_available:
             self.run_type = ['CUDAExecutionProvider']
 
         if model_data.process_method == MDX_ARCH_TYPE:
@@ -482,7 +482,7 @@ class SeperateMDX(SeperateAttributes):
                 separator = MdxnetSet.ConvTDFNet(**model_params)
                 self.model_run = separator.load_from_checkpoint(self.model_path).to(self.device).eval()
             else:
-                if self.mdx_segment_size == self.dim_t and self.gpu_type in (GPU_TYPE_CPU, GPU_TYPE_NVIDIA_CUDA):
+                if self.mdx_segment_size == self.dim_t and onnxruntime_cuda_available:
                     ort_ = ort.InferenceSession(self.model_path, providers=self.run_type)
                     self.model_run = lambda spek:ort_.run(None, {'input': spek.cpu().numpy()})[0]
                 else:
