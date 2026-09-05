@@ -46,26 +46,7 @@ from ml_collections import ConfigDict
 if TYPE_CHECKING:
     from UVR import ModelData
 
-if is_import_direct_ml:
-    import torch_directml
-
 default_sr = 44100
-
-# if not is_macos:
-#     import torch_directml
-
-# def get_gpu_info():
-#     directml_device, directml_available = DIRECTML_DEVICE, False
-    
-#     if not is_macos:
-#         directml_available = torch_directml.is_available()
-
-#         if directml_available:
-#             directml_device = str(torch_directml.device()).partition(":")[0]
-
-#     return directml_device, directml_available
-
-# DIRECTML_DEVICE, directml_available = get_gpu_info()
 
 warnings.filterwarnings("ignore")
 cpu = torch.device('cpu')
@@ -173,9 +154,7 @@ class SeperateAttributes:
         self.is_save_vocal_only = model_data.is_save_vocal_only
         self.device = cpu
         self.run_type = ['CPUExecutionProvider']
-        self.is_using_directml = False
         self.device_set = model_data.device_set
-        self.is_use_directml = model_data.is_use_directml
         self.is_demud = model_data.is_demud
         self.demudder_method = model_data.demudder_method
         self.gen_model_config = model_data.mdx_c_configs
@@ -196,18 +175,10 @@ class SeperateAttributes:
         if self.is_gpu_conversion >= 0:
             if mps_available:
                 self.device, self.is_other_gpu = 'mps', True
-            else:
-                device_prefix = None
-                if self.device_set != DEFAULT:
-                    device_prefix = DIRECTML_DEVICE if self.is_use_directml and directml_available else CUDA_DEVICE
-
-                if directml_available and self.is_use_directml:
-                    self.device = torch_directml.device() if not device_prefix else f'{device_prefix}:{self.device_set}'
-                    self.is_other_gpu = True
-                    self.is_using_directml = True
-                elif cuda_available and not self.is_use_directml:
-                    self.device = CUDA_DEVICE if not device_prefix else f'{device_prefix}:{self.device_set}'
-                    self.run_type = ['CUDAExecutionProvider']
+            elif cuda_available:
+                device_prefix = None if self.device_set == DEFAULT else CUDA_DEVICE
+                self.device = CUDA_DEVICE if not device_prefix else f'{device_prefix}:{self.device_set}'
+                self.run_type = ['CUDAExecutionProvider']
 
         if model_data.process_method == MDX_ARCH_TYPE:
             self.is_mdx_ckpt = model_data.is_mdx_ckpt
@@ -931,8 +902,6 @@ class SeperateMDXC(SeperateAttributes):
         batch_len = int(mix.shape[1] / step)
         if self.is_demud:
             batch_len = batch_len * chunk_add
-
-        self.is_use_torch_inference_mode = False if self.is_using_directml else self.is_use_torch_inference_mode
 
         with torch.inference_mode() if self.is_use_torch_inference_mode else torch.no_grad():
             req_shape = (num_instruments,) + mix.shape

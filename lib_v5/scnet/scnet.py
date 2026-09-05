@@ -327,7 +327,6 @@ class SCNet(nn.Module):
     def forward(self, x):
         # B, C, L = x.shape
         original_device = x.device
-        is_open_cl = 'privateuseone' in original_device.type
         is_other_gpu = is_using_other_gpu(x.device.type)
         if is_other_gpu:
             x = x.cpu()

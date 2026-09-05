@@ -66,14 +66,6 @@ from ruamel.yaml import YAML as YAML_C
 # import faulthandler
 # faulthandler.enable()
 
-if is_import_direct_ml:
-    import torch_directml
-
-# is_choose_arch = cuda_available and directml_available
-# is_opencl_only = not cuda_available and directml_available
-# is_cuda_only = cuda_available and not directml_available
-# is_gpu_available = cuda_available or directml_available or mps_available
-
 # Change the current working directory to the directory
 # this file sits in
 if getattr(sys, 'frozen', False):
@@ -609,7 +601,6 @@ class ModelData():
         self.is_denoise_model = True if root.denoise_option_var.get() == DENOISE_M and os.path.isfile(DENOISER_MODEL_PATH) else False
         self.is_gpu_conversion = 0 if root.is_gpu_conversion_var.get() else -1
         self.is_normalization = root.is_normalization_var.get()#
-        self.is_use_directml = True if is_directml_only else root.is_use_directml_var.get()
         self.is_primary_stem_only = root.is_primary_stem_only_var.get()
         self.is_secondary_stem_only = root.is_secondary_stem_only_var.get()
         self.is_denoise = True if not root.denoise_option_var.get() == DENOISE_NONE else False
@@ -703,7 +694,6 @@ class ModelData():
         self.mdx_model_type = None
         self.is_model_install = is_model_install
         self.top_window = top_window
-        self.is_direct_ml_compatible = True
         self.is_mps_compatible = True
         self.is_calculate_comp = root.compensate_var.get() == CALCULATE_SELECT
 
@@ -786,10 +776,6 @@ class ModelData():
                         self.mdx_model_type = self.model_data["model_type"]
                     
                     if "config_yaml" in self.model_data:
-                        if self.mdx_model_type in [SCNET_MODEL_TYPE, BANDIT_2_MODEL_TYPE, BANDIT_MODEL_TYPE] and self.is_use_directml and self.is_gpu_conversion >= 0:
-                            self.is_gpu_conversion = -1
-                            self.is_direct_ml_compatible = False
-
                         if self.mdx_model_type in [BANDIT_2_MODEL_TYPE, BANDIT_MODEL_TYPE] and mps_available and self.is_gpu_conversion >= 0:
                             self.is_gpu_conversion = -1
                             self.is_mps_compatible = False
@@ -1215,8 +1201,6 @@ class AudioTools():
         self.is_spec_match = root.is_spec_match_var.get()
         self.phase_option = root.phase_option_var.get()#
         self.phase_shifts = PHASE_SHIFTS_OPT[root.phase_shifts_var.get()]
-        self.is_compatible_gpu = True
-        
         self.apollo_model = root.apollo_model_var.get()
         self.apollo_overlap_val = int(root.apollo_overlap_var.get())
         self.apollo_chunk_val = int(root.apollo_chunk_size_var.get())
@@ -1234,15 +1218,7 @@ class AudioTools():
         is_gpu_conversion = 0 if root.is_gpu_conversion_var.get() else -1
         device_set = root.device_set_var.get()
         device_set = device_set.split(':')[-1].strip() if ':' in device_set else device_set
-        is_use_directml = True if is_directml_only else root.is_use_directml_var.get()
-
-        if is_use_directml:
-            device_set = 'cpu'
-            is_use_directml = False
-            is_gpu_conversion = -1
-            self.is_compatible_gpu = False
-
-        self.device, self.is_other_gpu = check_gpu_availability(is_gpu_conversion, device_set, is_use_directml)
+        self.device, self.is_other_gpu = check_gpu_availability(is_gpu_conversion, device_set)
         
     def align_inputs(self, audio_inputs, audio_file_base, audio_file_2_base, command_Text, set_progress_bar):
         audio_file_base = f"{self.is_testing_audio}{audio_file_base}"
@@ -2135,7 +2111,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         self.file_one_sub_var = tk.StringVar(value=FILE_ONE_MAIN_LABEL) 
         self.file_two_sub_var = tk.StringVar(value=FILE_TWO_MAIN_LABEL) 
         self.cuda_device_list = GPU_DEVICE_NUM_OPTS
-        self.directml_list = GPU_DEVICE_NUM_OPTS
         
         #Model Update
         self.last_found_ensembles = ENSEMBLE_OPTIONS
@@ -3967,16 +3942,10 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
                 self.cuda_device_list = [f"{torch.cuda.get_device_properties(i).name}:{i}" for i in range(torch.cuda.device_count())]
                 self.cuda_device_list.insert(0, DEFAULT)
             
-            if directml_available:
-                self.directml_list = [f"{torch_directml.device_name(i)}:{i}" for i in range(torch_directml.device_count())]
-                self.directml_list.insert(0, DEFAULT)
         except Exception as e:
             print(e)
             
-        if is_cuda_only:
-            self.is_use_directml_var.set(False)
-            
-        check_gpu_list = self.directml_list if is_directml_only or self.is_use_directml_var.get() else self.cuda_device_list
+        check_gpu_list = self.cuda_device_list
         if not self.device_set_var.get() in check_gpu_list:
             self.device_set_var.set(DEFAULT)
 
@@ -4131,11 +4100,10 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         change_model_default_Button = ttk.Button(settings_menu_format_Frame, text=CHANGE_MODEL_DEFAULTS_TEXT, command=lambda:self.pop_up_change_model_defaults(settings_menu), width=SETTINGS_BUT_WIDTH-2)#
         change_model_default_Button.grid(pady=MENU_PADDING_4)
 
-        if not is_choose_arch:
-            self.vocal_splitter_Button_opt(settings_menu, settings_menu_format_Frame, width=SETTINGS_BUT_WIDTH-2, pady=MENU_PADDING_4)
+        self.vocal_splitter_Button_opt(settings_menu, settings_menu_format_Frame, width=SETTINGS_BUT_WIDTH-2, pady=MENU_PADDING_4)
 
         if not is_macos and self.is_gpu_available:
-            gpu_list_options = lambda:self.loop_gpu_list(device_set_Option, 'gpudevice', self.directml_list if is_directml_only or self.is_use_directml_var.get() else self.cuda_device_list)
+            gpu_list_options = lambda:self.loop_gpu_list(device_set_Option, 'gpudevice', self.cuda_device_list)
             device_set_Label = self.menu_title_LABEL_SET(settings_menu_format_Frame, CUDA_NUM_TEXT)
             device_set_Label.grid(pady=MENU_PADDING_2)
             
@@ -4143,15 +4111,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             device_set_Option.grid(padx=20,pady=MENU_PADDING_1)
             gpu_list_options()
             self.help_hints(device_set_Label, text=IS_CUDA_SELECT_HELP)
-            
-            if is_choose_arch:
-                is_use_directml_Option = ttk.Checkbutton(settings_menu_format_Frame, 
-                                                       text=USE_DIRECTML_TEXT, 
-                                                       width=11, 
-                                                       variable=self.is_use_directml_var, 
-                                                       command=lambda:(gpu_list_options(), self.device_set_var.set(DEFAULT))) 
-                is_use_directml_Option.grid()
-                self.help_hints(is_use_directml_Option, text=IS_DIRECTML_HELP)
 
         model_sample_mode_Label = self.menu_title_LABEL_SET(settings_menu_format_Frame, MODEL_SAMPLE_MODE_SETTINGS_TEXT)
         model_sample_mode_Label.grid(pady=MENU_PADDING_2)
@@ -8528,8 +8487,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
                 self.process_update_gui_progress(prog_start)
             elif self.chosen_audio_tool_var.get() == APOLLO_RESTORE:#
                 audio_tool = AudioTools(APOLLO_RESTORE)
-                if not audio_tool.is_compatible_gpu:
-                    self.command_Text.write(f'{DIRECT_ML_INCOM(APOLLO_TYPE)}...\n')
                 self.process_update_gui_progress(0)
             elif self.chosen_audio_tool_var.get() == MANUAL_ENSEMBLE:
                 is_manual_ensemble = True
@@ -8832,9 +8789,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
                     if is_ensemble:
                         self.command_Text.write(f'Ensemble Mode - {current_model.model_basename} - Model {current_model_num}/{len(model)}{NEW_LINES}')
 
-                    if not current_model.is_direct_ml_compatible:
-                        self.command_Text.write(base_text + f'{DIRECT_ML_INCOM(current_model.mdx_model_type)}.\n')
-
                     if not current_model.is_mps_compatible:
                         self.command_Text.write(base_text + f'{MPS_INCOM(current_model.mdx_model_type)}.\n')
 
@@ -9078,7 +9032,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         self.is_accept_any_input_var = tk.BooleanVar(value=data['is_accept_any_input'])
         self.is_task_complete_var = tk.BooleanVar(value=data['is_task_complete'])
         self.is_normalization_var = tk.BooleanVar(value=data['is_normalization'])#
-        self.is_use_directml_var = tk.BooleanVar(value=True if is_directml_only else False)#
         self.is_wav_ensemble_var = tk.BooleanVar(value=data['is_wav_ensemble'])#
         self.is_create_model_folder_var = tk.BooleanVar(value=data['is_create_model_folder'])
         self.help_hints_var = tk.BooleanVar(value=data['help_hints_var'])
@@ -9249,7 +9202,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             
         self.is_gpu_conversion_var.set(loaded_setting['is_gpu_conversion'])
         self.is_normalization_var.set(loaded_setting['is_normalization'])#
-        self.is_use_directml_var.set(True if is_directml_only else loaded_setting['is_use_directml'])#
         self.is_wav_ensemble_var.set(loaded_setting['is_wav_ensemble'])#
         self.help_hints_var.set(loaded_setting['help_hints_var'])
         self.is_wav_ensemble_var.set(loaded_setting['is_wav_ensemble'])
@@ -9373,7 +9325,6 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
             'apollo_model': self.apollo_model_var.get(),
             'is_task_complete': self.is_task_complete_var.get(),
             'is_normalization': self.is_normalization_var.get(),#
-            'is_use_directml': self.is_use_directml_var.get(),#
             'is_wav_ensemble': self.is_wav_ensemble_var.get(),#
             'is_create_model_folder': self.is_create_model_folder_var.get(),
             'mp3_bit_set': self.mp3_bit_set_var.get(),

@@ -107,23 +107,13 @@ class Attention(Module):
         )
 
     def forward(self, x):
-        original_device = x.device
-        is_open_cl = 'privateuseone' in original_device.type
         x = self.norm(x)
 
         q, k, v = rearrange(self.to_qkv(x), 'b n (qkv h d) -> qkv b h n d', qkv = 3, h = self.heads)
 
-        if is_open_cl:
-            q, k = q.cpu(), k.cpu()
-
         if exists(self.rotary_embed):
-            if is_open_cl:
-                self.rotary_embed = self.rotary_embed.cpu()
             q = self.rotary_embed.rotate_queries_or_keys(q)
             k = self.rotary_embed.rotate_queries_or_keys(k)
-
-        if is_open_cl:
-            q, k = q.to(original_device), k.to(original_device)
 
         out = self.attend(q, k, v)
 
@@ -477,7 +467,7 @@ class MelBandRoformer(Module):
         """
 
         original_device = raw_audio.device
-        x_is_mps = True if original_device.type == "mps" or "privateuseone" in original_device.type else False
+        x_is_mps = original_device.type == "mps"
         if x_is_mps:
             raw_audio = raw_audio.cpu()
         device = raw_audio.device

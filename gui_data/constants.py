@@ -11,7 +11,6 @@ is_macos = False
 
 CPU = 'cpu'
 CUDA_DEVICE = 'cuda'
-DIRECTML_DEVICE = "privateuseone"
 MPS_DEVICE = "mps"
 
 #MAIN_FONT_NAME = "Century Gothic"
@@ -722,7 +721,6 @@ DEFAULT_DATA = {
         'is_save_to_input_path': False,
         'is_task_complete': False,
         'is_normalization': False,
-        'is_use_directml': False,
         'is_wav_ensemble': False,
         'is_create_model_folder': False,
         'mp3_bit_set': '320k',#
@@ -856,7 +854,6 @@ SETTING_CHECK = ('vr_model',
                'user_code',
                'is_gpu_conversion',
                'is_normalization',
-               'is_use_directml',
                'is_wav_ensemble',
                'help_hints_var',
                'set_vocal_splitter',
@@ -1125,8 +1122,6 @@ else:
 IS_TIME_CORRECTION_HELP = ('When checked, the output will retain the original BPM of the input.')
 SAVE_STEM_ONLY_HELP = 'Allows the user to save only the selected stem.'
 IS_NORMALIZATION_HELP = 'Normalizes output to prevent clipping.'
-IS_DIRECTML_HELP = ('• Utilizes DirectML instead of CUDA when checked. This option is useful for non-Nvidia GPU\'s.\n'
-                    '       - This option is experimental and may not work correctly with some networks.')
 IS_CUDA_SELECT_HELP = "If you have more than one GPU, you can pick which one to use for processing."
 CROP_SIZE_HELP = '**Only compatible with select models only!**\n\n Setting should match training crop-size value. Leave as is if unsure.'
 IS_TTA_HELP = ('This option performs Test-Time-Augmentation to improve the separation quality.\n\n'
@@ -1632,7 +1627,6 @@ NAME_SETTINGS_TEXT = 'Name Settings'
 NO_DEFINED_PARAMETERS_FOUND_TEXT = 'No Defined Parameters Found'
 NO_TEXT = 'No'
 NORMALIZE_OUTPUT_TEXT = 'Normalize Output'
-USE_DIRECTML_TEXT = 'Use DirectML'
 NOT_ENOUGH_MODELS_TEXT = 'Not Enough Models'
 NOTIFICATION_CHIMES_TEXT = 'Notification Chimes'
 OPEN_APPLICATION_DIRECTORY_TEXT = 'Open Application Directory'
@@ -1750,7 +1744,6 @@ GET_DL_VIP_CODE_TEXT = ("Obtain codes by visiting one of the following links bel
 CONFIRM_RESTART_TEXT = 'Restart Confirmation', 'This will restart the application and halt any running processes. Your current settings will be saved. \n\n Are you sure you wish to continue?'
 ERROR_LOADING_FILE_TEXT = 'Error Loading the Following File', 'Raw Error Details'
 LOADING_MODEL_TEXT = 'Loading model'
-DIRECT_ML_INCOM = lambda m: f'DirectML is incompatible with {m}. Defaulting to CPU'
 MPS_INCOM = lambda m: f'MPS is incompatible with {m}. Defaulting to CPU'
 FULL_APP_SET_TEXT = 'Full Application Settings'
 PROCESS_STARTING_TEXT = 'Process starting... '
