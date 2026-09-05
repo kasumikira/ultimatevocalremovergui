@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import os
 import subprocess
 import sys
@@ -9,6 +10,7 @@ import zipfile
 from pathlib import Path
 
 import PyInstaller.__main__
+from rocm_sdk import _dist_info
 
 from __version__ import VERSION
 
@@ -84,6 +86,25 @@ def add_runtime_resources(args: list[str]) -> None:
     args.extend(["--collect-submodules", "demucs"])
     args.extend(["--collect-binaries", "samplerate"])
 
+    # target_families = (
+    #     _dist_info.WINDOWS_TARGET_FAMILIES
+    #     or _dist_info.AVAILABLE_TARGET_FAMILIES
+    # )
+    # target_families = sorted({ family.split(":")[0] for family in target_families })
+    core_modules = _dist_info.ALL_PACKAGES["core"].get_py_package_name()
+    libraries_module = _dist_info.ALL_PACKAGES["libraries"].get_py_package_name()
+
+    for module_name in (core_modules, libraries_module):
+        if importlib.util.find_spec(module_name) is None:
+            raise SystemExit(
+                f"ROCm runtime package is not importable: {module_name}"
+            )
+        args.extend([
+            "--hidden-import", module_name,
+            "--collect-data", module_name,
+            "--collect-binaries", module_name,
+        ])
+
 
 def add_vendor_binaries(args: list[str]) -> None:
     for name in ("ffmpeg.exe", "rubberband.exe", "sndfile.dll"):
@@ -93,7 +114,7 @@ def add_vendor_binaries(args: list[str]) -> None:
         args.extend(["--add-binary", data_arg(source, ".")])
 
 
-def run_pyinstaller(clean: bool) -> None:
+def run_pyinstaller(clean: bool, debug_console: bool = False) -> None:
     WORK.mkdir(parents=True, exist_ok=True)
 
     args = [
@@ -101,7 +122,6 @@ def run_pyinstaller(clean: bool) -> None:
         "--name", APP_NAME,
         "--onedir",
         "--contents-directory", ".",
-        "--windowed",
         "--noconfirm",
         "--noupx",
         "--icon", str(ICON),
@@ -109,6 +129,11 @@ def run_pyinstaller(clean: bool) -> None:
         "--workpath", str(WORK),
         "--specpath", str(WORK),
     ]
+
+    if debug_console:
+        args.extend(["--console", "--debug", "all"])
+    else:
+        args.append("--windowed")
 
     if clean:
         args.append("--clean")
@@ -152,11 +177,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-clean", action="store_true")
     parser.add_argument("--no-installer", action="store_true")
+    parser.add_argument("--debug-console", action="store_true")
     args = parser.parse_args()
 
     assert_project_environment()
     prepare_vendor_binaries()
-    run_pyinstaller(clean=not args.no_clean)
+    run_pyinstaller(clean=not args.no_clean, debug_console=args.debug_console)
 
     if not args.no_installer:
         run_inno_setup()
