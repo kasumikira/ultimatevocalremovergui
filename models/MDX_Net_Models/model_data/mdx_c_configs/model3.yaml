@@ -30,5 +30,5 @@ training:
   target_instrument: Vocals
 inference:
   batch_size: 1
-  dim_t: 256
+  dim_t: 1024
   num_overlap: 8

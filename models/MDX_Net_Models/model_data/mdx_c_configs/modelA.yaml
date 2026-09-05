@@ -35,5 +35,5 @@ training:
   target_instrument: null
 inference:
   batch_size: 2
-  dim_t: 256
+  dim_t: 1024
   num_overlap: 8
