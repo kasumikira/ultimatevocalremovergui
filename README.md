@@ -30,8 +30,6 @@ These bundles contain the UVR interface, Python, PyTorch, and other dependencies
 - Download the UVR installer for Windows via the link below:
     - [Main Download Link](https://github.com/Anjok07/ultimatevocalremovergui/releases/download/v5.6/UVR_v5.6.0_setup.exe)
     - [Main Download Link mirror](https://www.mediafire.com/file_premium/jiatpgp0ljou52p/UVR_v5.6.0_setup.exe/file)
-- If you use an **AMD Radeon or Intel Arc graphics card**, you can try the DirectML version:
-    - [DirectML Version - Main Download Link](https://github.com/Anjok07/ultimatevocalremovergui/releases/download/v5.6/UVR_1_15_25_22_30_BETA_full.exe)
 - Update Package instructions for those who have UVR already installed:
     - If you already have UVR installed you can install this package over it or download it straight from the application or [click here for the patch](https://github.com/Anjok07/ultimatevocalremovergui/releases/download/v5.6/UVR_Patch_10_6_23_4_27.exe).
 
@@ -41,18 +39,33 @@ These bundles contain the UVR interface, Python, PyTorch, and other dependencies
 ### Manual Windows Installation
 
 - Download and extract the repository [here](https://github.com/Anjok07/ultimatevocalremovergui/archive/refs/heads/master.zip)
-- Download and install Python [here](https://www.python.org/ftp/python/3.9.8/python-3.9.8-amd64.exe)
+- Install Python 3.10.
    - Make sure to check "Add python.exe to PATH" during the install
-- Run the following commands from the extracted repo directory:
+- Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- From the extracted repository directory, install exactly one compute backend:
 
-```
-python.exe -m pip install -r requirements.txt
+CPU:
+
+```powershell
+uv sync --extra cpu
 ```
 
-If you have a compatible Nvidia GPU, run the following command:
+NVIDIA CUDA:
 
+```powershell
+uv sync --extra cuda
 ```
-python.exe -m pip install --upgrade torch --extra-index-url https://download.pytorch.org/whl/cu117
+
+AMD ROCm:
+
+```powershell
+uv sync --extra rocm
+```
+
+The CPU, CUDA, and ROCm extras are mutually exclusive. Start UVR after synchronization with:
+
+```powershell
+uv run python UVR.py
 ```
 
 If you do not have FFmpeg or Rubber Band installed and want to avoid going through the process of installing them the long way, follow the instructions below.
@@ -163,53 +176,61 @@ This process has been tested on a MacBook Pro 2021 (using M1) and a MacBook Air 
 
 ---
 
-#### **Step 2: Install Dependencies**
+#### **Step 2: Install System Dependencies**
 Use the following commands based on your system type:
 
 **For Debian-based systems (Ubuntu, Mint, etc.):**
 ```bash
 sudo apt update && sudo apt upgrade
-sudo apt-get install -y ffmpeg python3-pip python3-tk
+sudo apt-get install -y ffmpeg python3-tk
 ```
 
 **For Arch-based systems (EndeavourOS):**
 ```bash
 sudo pacman -Syu
-sudo pacman -S ffmpeg python-pip tk
+sudo pacman -S ffmpeg tk
 ```
 
 ---
 
-#### **Step 3: Set Up a Virtual Environment (Recommended)**
-Setting up a virtual environment (venv) ensures that the program's dependencies do not interfere with system-wide Python packages.
+#### **Step 3: Install Python Dependencies**
 
-1. **Navigate to the extracted repository directory:**
-   ```bash
-   cd /path/to/ultimatevocalremovergui
-   ```
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then navigate to the extracted repository directory:
 
-2. **Create a virtual environment:**
-   ```bash
-   python3 -m venv venv
-   ```
+```bash
+cd /path/to/ultimatevocalremovergui
+```
 
-3. **Activate the virtual environment:**
-   - For **Debian-based and Arch-based systems:**
-     ```bash
-     source venv/bin/activate
-     ```
+Install exactly one compute backend:
 
-4. **Install dependencies in the virtual environment:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+CPU:
+
+```bash
+uv sync --extra cpu
+```
+
+NVIDIA CUDA:
+
+```bash
+uv sync --extra cuda
+```
+
+AMD ROCm on x86-64 Linux:
+
+```bash
+uv sync --extra rocm
+```
+
+The CPU, CUDA, and ROCm extras are mutually exclusive. `uv sync` creates and manages the project environment automatically.
 
 ---
 
 #### **Step 4: Run the Application**
-While the virtual environment is activated, start the application:
+
+Start the application through the project environment:
+
 ```bash
-python UVR.py
+uv run python UVR.py
 ```
 
 ---
@@ -218,8 +239,8 @@ python UVR.py
 1. **Avoid Modifying System Files:**  
    Previous instructions suggested deleting the `/usr/lib/python3.11/EXTERNALLY-MANAGED` file, which is dangerous and can break Python package management. Do **NOT** delete this file.
 
-2. **Why Use Virtual Environments?**  
-   Virtual environments isolate the program's dependencies, preventing conflicts with system Python packages. More information is available [here](https://stackoverflow.com/questions/75602063/pip-install-r-requirements-txt-is-failing-this-environment-is-externally-mana/75696359#75696359).
+2. **Project Environment:**
+   Run UVR through `uv run` so it uses the backend and dependencies selected by `uv sync`.
 
 3. **Known Issues and Discussions:**  
    - [Issue #1578](https://github.com/Anjok07/ultimatevocalremovergui/issues/1578)  
@@ -234,9 +255,9 @@ If you encounter issues, refer to the [GitHub Issues](https://github.com/Anjok07
 ### Other Application Notes
 - Nvidia GTX 1060 6GB is the minimum requirement for GPU conversions.
 - Nvidia GPUs with at least 8GBs of V-RAM are recommended.
-- AMD Radeon GPU supported is limited at this time.
-   - There is currently a working branch for AMD GPU users [here](https://github.com/Anjok07/ultimatevocalremovergui/tree/v5.6-amd-gpu)
-- This application is only compatible with 64-bit platforms. 
+- Manual installations can select CPU, NVIDIA CUDA, or AMD ROCm dependencies through the corresponding `uv` extra.
+- The ROCm dependency set is available on 64-bit Windows and x86-64 Linux.
+- This application is only compatible with 64-bit platforms.
 - This application relies on the Rubber Band library for the Time-Stretch and Pitch-Shift options.
 - This application relies on FFmpeg to process non-wav audio files.
 - The application will automatically remember your settings when closed.

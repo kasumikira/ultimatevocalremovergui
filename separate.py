@@ -132,7 +132,7 @@ class SeperateAttributes:
         self.main_model_primary = main_model_primary
         self.ensemble_primary_stem = model_data.ensemble_primary_stem
         self.is_multi_stem_ensemble = model_data.is_multi_stem_ensemble
-        self.is_other_gpu = False
+        self.gpu_type = GPU_TYPE_CPU
         self.is_deverb = True
         self.DENOISER_MODEL = model_data.DENOISER_MODEL
         self.DEVERBER_MODEL = model_data.DEVERBER_MODEL
@@ -172,13 +172,12 @@ class SeperateAttributes:
         if main_model_primary and self.is_multi_stem_ensemble:
             self.primary_stem, self.secondary_stem = main_model_primary, secondary_stem(main_model_primary)
 
-        if self.is_gpu_conversion >= 0:
-            if mps_available:
-                self.device, self.is_other_gpu = 'mps', True
-            elif cuda_available:
-                device_prefix = None if self.device_set == DEFAULT else CUDA_DEVICE
-                self.device = CUDA_DEVICE if not device_prefix else f'{device_prefix}:{self.device_set}'
-                self.run_type = ['CUDAExecutionProvider']
+        self.device, self.gpu_type = check_gpu_availability(
+            self.is_gpu_conversion,
+            self.device_set,
+        )
+        if self.gpu_type == GPU_TYPE_NVIDIA_CUDA:
+            self.run_type = ['CUDAExecutionProvider']
 
         if model_data.process_method == MDX_ARCH_TYPE:
             self.is_mdx_ckpt = model_data.is_mdx_ckpt
@@ -218,7 +217,7 @@ class SeperateAttributes:
             self.is_demucs_combine_stems = model_data.is_demucs_combine_stems
             self.demucs_stem_count = model_data.demucs_stem_count
             self.pre_proc_model = model_data.pre_proc_model
-            self.device = cpu if self.is_other_gpu and not self.demucs_version in [DEMUCS_V3, DEMUCS_V4] else self.device
+            self.device = cpu if self.gpu_type == GPU_TYPE_APPLE_MPS and not self.demucs_version in [DEMUCS_V3, DEMUCS_V4] else self.device
 
             self.primary_stem = model_data.ensemble_primary_stem if process_data['is_ensemble_master'] else model_data.primary_stem
             self.secondary_stem = model_data.ensemble_secondary_stem if process_data['is_ensemble_master'] else model_data.secondary_stem
@@ -483,7 +482,7 @@ class SeperateMDX(SeperateAttributes):
                 separator = MdxnetSet.ConvTDFNet(**model_params)
                 self.model_run = separator.load_from_checkpoint(self.model_path).to(self.device).eval()
             else:
-                if self.mdx_segment_size == self.dim_t and not self.is_other_gpu and is_use_onnx_model:
+                if self.mdx_segment_size == self.dim_t and self.gpu_type in (GPU_TYPE_CPU, GPU_TYPE_NVIDIA_CUDA):
                     ort_ = ort.InferenceSession(self.model_path, providers=self.run_type)
                     self.model_run = lambda spek:ort_.run(None, {'input': spek.cpu().numpy()})[0]
                 else:
@@ -807,7 +806,7 @@ class SeperateMDXC(SeperateAttributes):
         return window
 
     def overlap_add(self, result, x, l, j, start, window):
-        if self.device == 'mps' or self.is_other_gpu:
+        if self.gpu_type == GPU_TYPE_APPLE_MPS:
             x = x.to(self.device)
         result[..., start:start + l] += x[j, ..., :l] * window[..., :l]
         return result

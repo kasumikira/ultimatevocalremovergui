@@ -1,6 +1,10 @@
 # GUI modules
 from gui_data.dpi import configure_tk_scaling, scale_pixels
 
+from lib_v5.rocm_windows_workaround import apply_rocm_windows_offload_arch_workaround
+
+apply_rocm_windows_offload_arch_workaround()
+
 import lib_v5.bypass_check_patch
 import time
 #start_time = time.time()
@@ -1218,7 +1222,7 @@ class AudioTools():
         is_gpu_conversion = 0 if root.is_gpu_conversion_var.get() else -1
         device_set = root.device_set_var.get()
         device_set = device_set.split(':')[-1].strip() if ':' in device_set else device_set
-        self.device, self.is_other_gpu = check_gpu_availability(is_gpu_conversion, device_set)
+        self.device, self.gpu_type = check_gpu_availability(is_gpu_conversion, device_set)
         
     def align_inputs(self, audio_inputs, audio_file_base, audio_file_2_base, command_Text, set_progress_bar):
         audio_file_base = f"{self.is_testing_audio}{audio_file_base}"
