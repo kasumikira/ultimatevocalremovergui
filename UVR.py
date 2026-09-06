@@ -2976,7 +2976,9 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         """Deletes temp files"""
         
         DIRECTORIES = (BASE_PATH, VR_MODELS_DIR, MDX_MODELS_DIR, DEMUCS_MODELS_DIR, DEMUCS_NEWER_REPO_DIR)
-        EXTENSIONS = (('.aes', '.txt', '.tmp'))
+        # wget leaves unfinished downloads as .tmp files. Legacy .aes/.txt
+        # files belonged to the old download-code temp directory.
+        EXTENSIONS = ('.tmp',)
         
         try:
             if os.path.isfile(f"{current_patch}{application_extension}"):
@@ -5808,6 +5810,10 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
                     shutil.copy(source_path, destination_path)
                 else:
                     shutil.move(source_path, destination_path)
+                if self.chosen_process_method_var.get() == VR_ARCH_PM:
+                    self.vr_hash_MAPPER = load_model_hash_data(VR_HASH_JSON)
+                elif self.chosen_process_method_var.get() == MDX_ARCH_TYPE:
+                    self.mdx_hash_MAPPER = load_model_hash_data(MDX_HASH_JSON)
                 if self.chosen_process_method_var.get() == AUDIO_TOOLS:
                     model_data = ApolloModelData(selected_model, is_model_install=True, top_window=install_model_menu)
                     if self.apollo_model_params:
