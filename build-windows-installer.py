@@ -10,7 +10,7 @@ import zipfile
 from pathlib import Path
 
 import PyInstaller.__main__
-from rocm_sdk import _dist_info
+import torch
 
 from __version__ import VERSION
 
@@ -23,6 +23,14 @@ VENDOR = BUILDROOT / "vendor"
 
 APP_NAME = "UVR"
 ICON = ROOT / "gui_data" / "img" / "GUI-Icon.ico"
+DISK_SLICE_SIZE_LIMIT = 4_200_000_000
+
+def detect_backend() -> str:
+    if torch.version.cuda:
+        return "cuda"
+    if torch.version.hip:
+        return "rocm"
+    return "cpu"
 
 
 def assert_project_environment() -> None:
@@ -85,6 +93,12 @@ def add_runtime_resources(args: list[str]) -> None:
         args.extend(["--add-data", data_arg(ROOT / path, path)])
     args.extend(["--collect-submodules", "demucs"])
     args.extend(["--collect-binaries", "samplerate"])
+
+    try:
+        from rocm_sdk import _dist_info
+    except ImportError:
+        print("ROCm is not detected. Skipping...")
+        return
 
     # target_families = (
     #     _dist_info.WINDOWS_TARGET_FAMILIES
@@ -154,7 +168,11 @@ def read_uvr_version() -> str:
     return VERSION.split('v')[-1]
 
 
-def run_inno_setup() -> None:
+def directory_size(path: Path) -> int:
+    return sum(file.stat().st_size for file in path.rglob("*") if file.is_file())
+
+
+def run_inno_setup(backend: str) -> None:
     # Deliberately target one specific Windows build environment.
     program_files_x86 = os.environ["ProgramFiles(x86)"]
     iscc = Path(program_files_x86) / "Inno Setup 6" / "ISCC.exe"
@@ -166,8 +184,22 @@ def run_inno_setup() -> None:
         raise SystemExit(f"Missing installer definition: {installer}")
 
     version = read_uvr_version()
+    app_directory = DIST / APP_NAME
+    app_size = directory_size(app_directory)
+    definitions = [
+        f"/DAppVersion={version}",
+        f"/DBuildFlavor={backend}",
+    ]
+    if app_size > DISK_SLICE_SIZE_LIMIT:
+        definitions.append("/DUseDiskSpanning")
+        print("Application size ({app_size} bytes) exceeds {DISK_SLICE_SIZE_LIMIT} bytes; enabling disk spanning.")
+
     subprocess.run(
-        [str(iscc), f"/DAppVersion={version}", str(installer)],
+        [
+            str(iscc),
+            *definitions,
+            str(installer),
+        ],
         cwd=ROOT,
         check=True,
     )
@@ -181,11 +213,13 @@ def main() -> None:
     args = parser.parse_args()
 
     assert_project_environment()
+    backend = detect_backend()
+    print(f"Detected PyTorch backend: {backend} ({torch.__version__})")
     prepare_vendor_binaries()
     run_pyinstaller(clean=not args.no_clean, debug_console=args.debug_console)
 
     if not args.no_installer:
-        run_inno_setup()
+        run_inno_setup(backend)
 
 
 if __name__ == "__main__":

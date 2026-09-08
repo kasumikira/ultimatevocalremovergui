@@ -4,6 +4,10 @@
   #error AppVersion must be supplied by build script
 #endif
 
+#ifndef BuildFlavor
+  #define BuildFlavor "cpu"
+#endif
+
 #define AppName "Ultimate Vocal Remover"
 #define AppPublisher "Ultimate Vocal Remover, Inc."
 #define AppURL "https://github.com/Anjok07/ultimatevocalremovergui"
@@ -36,16 +40,22 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 
 OutputDir=.\build\installer
-OutputBaseFilename=UVR_v{#AppVersion}_setup
+OutputBaseFilename=UVR_v{#AppVersion}_{#BuildFlavor}_setup
 
 SetupIconFile=.\gui_data\img\GUI-Icon.ico
 UninstallDisplayIcon={app}\{#AppExeName}
 
-Compression=lzma2/ultra64
+Compression=lzma2/normal
 SolidCompression=yes
 WizardStyle=modern
 
 UsePreviousAppDir=yes
+
+#ifdef UseDiskSpanning
+DiskSpanning=yes
+; For compability with FAT32
+DiskSliceSize=4290000000
+#endif
 
 [Files]
 Source: ".\build\pyinstaller\dist\UVR\*"; \

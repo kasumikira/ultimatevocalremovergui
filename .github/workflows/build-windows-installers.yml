@@ -1,0 +1,52 @@
+name: Build Windows installers
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Windows ${{ matrix.backend }}
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        backend:
+          - cpu
+          - cuda
+          - rocm
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-suffix: ${{ matrix.backend }}
+          cache-dependency-glob: uv.lock
+
+      - name: Install ${{ matrix.backend }} dependencies
+        shell: pwsh
+        run: uv sync --frozen --extra ${{ matrix.backend }}
+
+      - name: Build ${{ matrix.backend }} installer
+        shell: pwsh
+        run: uv run --no-sync python build-windows-installer.py
+
+      - name: Upload ${{ matrix.backend }} installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: UVR-Windows-${{ matrix.backend }}
+          path: |
+            build/installer/UVR_*_${{ matrix.backend }}_setup.exe
+            build/installer/UVR_*_${{ matrix.backend }}_setup-*.bin
+          if-no-files-found: error
