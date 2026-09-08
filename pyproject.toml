@@ -71,12 +71,14 @@ cuda = [
     "torch==2.11.0+cu128 ; sys_platform != 'darwin'",
     "torchvision==0.26.0+cu128 ; sys_platform != 'darwin'",
     "torchaudio==2.11.0+cu128 ; sys_platform != 'darwin'",
+    "triton-windows>=3.6,<3.7 ; sys_platform == 'win32' and platform_machine == 'AMD64'",
     "onnxruntime-gpu==1.23.2 ; (sys_platform == 'win32' and platform_machine == 'AMD64') or (sys_platform == 'linux' and platform_machine == 'x86_64')",
 ]
 rocm = [
     "torch[device-all]==2.11.0+rocm7.14.1 ; (sys_platform == 'win32' and platform_machine == 'AMD64') or (sys_platform == 'linux' and platform_machine == 'x86_64')",
     "torchvision[device-all]==0.26.0+rocm7.14.1 ; (sys_platform == 'win32' and platform_machine == 'AMD64') or (sys_platform == 'linux' and platform_machine == 'x86_64')",
     "torchaudio==2.11.0+rocm7.14.1 ; (sys_platform == 'win32' and platform_machine == 'AMD64') or (sys_platform == 'linux' and platform_machine == 'x86_64')",
+    "triton-windows>=3.6,<3.7 ; sys_platform == 'win32' and platform_machine == 'AMD64'",
     "onnxruntime==1.23.2",
 ]
 
