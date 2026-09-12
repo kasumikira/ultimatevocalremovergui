@@ -53,7 +53,7 @@ from lib_v5 import apollo_inference
 from lib_v5.verify_gpu_availability import *
 from kthread import KThread
 from pathlib  import Path
-from separate import (
+from separation import (
     SeperateDemucs, SeperateMDX, SeperateMDXC, SeperateVR,  # Model-related
     save_format  # Utility functions
 )
