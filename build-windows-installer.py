@@ -192,7 +192,7 @@ def run_inno_setup(backend: str) -> None:
     ]
     if app_size > DISK_SLICE_SIZE_LIMIT:
         definitions.append("/DUseDiskSpanning")
-        print("Application size ({app_size} bytes) exceeds {DISK_SLICE_SIZE_LIMIT} bytes; enabling disk spanning.")
+        print(f"Application size ({app_size} bytes) exceeds {DISK_SLICE_SIZE_LIMIT} bytes; enabling disk spanning.")
 
     subprocess.run(
         [
