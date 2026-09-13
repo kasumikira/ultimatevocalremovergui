@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ml_collections import ConfigDict
 import torch
-import torch.nn as nn
+from ml_collections import ConfigDict
+from torch import nn
 
 from lib_v5.bandit.core.model import MultiMaskMultiSourceBandSplitRNNSimple
 from lib_v5.bandit_v2.bandit import Bandit
@@ -13,7 +13,6 @@ from lib_v5.roformer.mel_band_roformer_new import MelBandRoformer as MelBandRofo
 from lib_v5.scnet.scnet import SCNet
 from lib_v5.tfc_tdf_v3 import TFC_TDF_net
 from lib_v5.verify_gpu_availability import GPU_TYPE_APPLE_MPS
-
 
 MDXC_MODELS = {
     'BS-Roformer': ('BSRoformer', 'model'),

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import gzip
 import os
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -29,7 +29,6 @@ from gui_data.constants import (
 )
 from lib_v5 import spec_utils
 from lib_v5.verify_gpu_availability import clear_gpu_cache
-
 from separation.audio import prepare_mix
 from separation.inference.demucs import DemucsInference
 from separation.orchestration import process_secondary_model

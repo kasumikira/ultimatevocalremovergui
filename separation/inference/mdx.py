@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 import torch
 
-from .vr import vr_denoiser
 from gui_data.constants import (
     DEFAULT,
     DEMUD_COMBINE_METHODS,
@@ -16,6 +15,8 @@ from gui_data.constants import (
 )
 from lib_v5 import spec_utils
 from lib_v5.tfc_tdf_v3 import STFT
+
+from .vr import vr_denoiser
 
 
 class MDXInference:

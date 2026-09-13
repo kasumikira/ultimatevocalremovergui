@@ -6,7 +6,6 @@ import librosa
 import numpy as np
 import torch
 
-from ..audio import loading_mix, rerun_mp3
 from gui_data.constants import (
     ARM,
     NON_ACCOM_STEMS,
@@ -19,6 +18,7 @@ from lib_v5 import spec_utils
 from lib_v5.vr_network import nets_new
 from lib_v5.vr_network.model_param_init import ModelParameters
 
+from ..audio import loading_mix, rerun_mp3
 
 cpu = torch.device('cpu')
 

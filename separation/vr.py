@@ -12,10 +12,9 @@ import torch
 from gui_data.constants import DONE
 from lib_v5.verify_gpu_availability import clear_gpu_cache
 from lib_v5.vr_network import nets, nets_new
-from separation.orchestration import process_secondary_model
 from separation.inference.vr import VRInference
+from separation.orchestration import process_secondary_model
 from separation.workflow import SeperateAttributes
-
 
 cpu = torch.device('cpu')
 

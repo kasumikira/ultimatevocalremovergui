@@ -3,11 +3,21 @@
 import numpy as np
 
 from gui_data.constants import (
-    DEMUCS_ARCH_TYPE, DONE, INFERENCE_STEP_1, INFERENCE_STEP_1_PRE,
-    INFERENCE_STEP_1_SEC, INFERENCE_STEP_1_VOC_S, INFERENCE_STEP_2_PRE,
-    INFERENCE_STEP_2_PRE_CACHED_MODOEL, INFERENCE_STEP_2_PRIMARY_CACHED,
-    INFERENCE_STEP_2_SEC, INFERENCE_STEP_2_SEC_CACHED_MODOEL,
-    INFERENCE_STEP_2_VOC_S, INST_STEM, MDX_ARCH_TYPE, VOCAL_STEM,
+    DEMUCS_ARCH_TYPE,
+    DONE,
+    INFERENCE_STEP_1,
+    INFERENCE_STEP_1_PRE,
+    INFERENCE_STEP_1_SEC,
+    INFERENCE_STEP_1_VOC_S,
+    INFERENCE_STEP_2_PRE,
+    INFERENCE_STEP_2_PRE_CACHED_MODOEL,
+    INFERENCE_STEP_2_PRIMARY_CACHED,
+    INFERENCE_STEP_2_SEC,
+    INFERENCE_STEP_2_SEC_CACHED_MODOEL,
+    INFERENCE_STEP_2_VOC_S,
+    INST_STEM,
+    MDX_ARCH_TYPE,
+    VOCAL_STEM,
     VR_ARCH_TYPE,
 )
 from lib_v5 import spec_utils
@@ -19,9 +29,15 @@ from separation.state import SeparationState
 class SeperateAttributes(SeparationState, AudioOutput):
 
     def check_label_secondary_stem_runs(self):
-        if (self.process_data['is_ensemble_master'] and not self.is_4_stem_ensemble and not self.is_mdx_c) or (self.process_data['is_ensemble_master'] and self.is_target_instrument):
-            if self.ensemble_primary_stem != self.primary_stem:
-                self.is_primary_stem_only, self.is_secondary_stem_only = self.is_secondary_stem_only, self.is_primary_stem_only
+        if (
+            self.process_data['is_ensemble_master']
+            and (
+                self.is_target_instrument
+                or (not self.is_4_stem_ensemble and not self.is_mdx_c)
+            )
+            and self.ensemble_primary_stem != self.primary_stem
+        ):
+            self.is_primary_stem_only, self.is_secondary_stem_only = self.is_secondary_stem_only, self.is_primary_stem_only
 
         if self.is_pre_proc_model or self.is_secondary_model:
             self.is_primary_stem_only = False
@@ -109,8 +125,7 @@ class SeperateAttributes(SeparationState, AudioOutput):
             )
 
     def process_secondary_stem(self, stem_source, secondary_model_source=None, model_scale=None):
-        if not self.is_secondary_model:
-            if self.is_secondary_model_activated and isinstance(secondary_model_source, np.ndarray):
+        if not self.is_secondary_model and self.is_secondary_model_activated and isinstance(secondary_model_source, np.ndarray):
                 secondary_model_scale = model_scale if model_scale else self.secondary_model_scale
                 stem_source = spec_utils.average_dual_sources(stem_source, secondary_model_source, secondary_model_scale)
 

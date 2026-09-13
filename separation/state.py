@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 import os
 import time
+from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
@@ -23,7 +23,6 @@ from lib_v5.verify_gpu_availability import (
     check_gpu_availability,
     onnxruntime_cuda_available,
 )
-
 
 if TYPE_CHECKING:
     from UVR import ModelData

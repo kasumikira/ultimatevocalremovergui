@@ -21,11 +21,10 @@ from gui_data.constants import (
 )
 from lib_v5 import spec_utils
 from lib_v5.verify_gpu_availability import clear_gpu_cache
-
 from separation.audio import prepare_mix
 from separation.inference.mdxc import MDXCInference
-from separation.orchestration import process_secondary_model
 from separation.inference.vr import vr_denoiser
+from separation.orchestration import process_secondary_model
 from separation.workflow import SeperateAttributes
 
 # MDXC backend: loading, chunk inference and stem processing

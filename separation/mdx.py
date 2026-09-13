@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import os
 
-from onnx import load
-from onnx2pytorch import ConvertModel
 import numpy as np
 import onnxruntime as ort
 import torch
+from onnx import load
+from onnx2pytorch import ConvertModel
 
+import lib_v5.mdxnet as MdxnetSet
 from gui_data.constants import (
     DEFAULT,
     DONE,
@@ -19,8 +20,6 @@ from gui_data.constants import (
 )
 from lib_v5 import spec_utils
 from lib_v5.verify_gpu_availability import clear_gpu_cache, onnxruntime_cuda_available
-import lib_v5.mdxnet as MdxnetSet
-
 from separation.audio import prepare_mix
 from separation.inference.mdx import MDXInference
 from separation.orchestration import process_secondary_model

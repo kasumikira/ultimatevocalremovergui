@@ -4,8 +4,6 @@ import os
 
 import soundfile as sf
 
-from .audio import save_format
-from .inference.vr import vr_denoiser
 from gui_data.constants import (
     BV_VOCAL_STEM,
     BV_VOCAL_STEM_I,
@@ -20,6 +18,9 @@ from gui_data.constants import (
     VOCAL_STEM,
 )
 from lib_v5 import spec_utils
+
+from .audio import save_format
+from .inference.vr import vr_denoiser
 
 
 class AudioOutput:

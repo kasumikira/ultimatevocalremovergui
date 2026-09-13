@@ -5,7 +5,6 @@ from separation.mdx import SeperateMDX
 from separation.mdxc import SeperateMDXC
 from separation.vr import SeperateVR
 
-
 BACKENDS = {
     'VR Arc': SeperateVR,
     'MDX-Net': SeperateMDX,

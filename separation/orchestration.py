@@ -24,11 +24,11 @@ def process_secondary_model(secondary_model: ModelData,
     if not is_pre_proc_model:
         process_data['process_iteration']()
 
-    options = dict(
-        main_model_primary_stem_4_stem=main_model_primary_stem_4_stem,
-        main_process_method=main_process_method,
-        main_model_primary=main_model_primary,
-    )
+    options = {
+        'main_model_primary_stem_4_stem': main_model_primary_stem_4_stem,
+        'main_process_method': main_process_method,
+        'main_model_primary': main_model_primary,
+    }
     if secondary_model.process_method == DEMUCS_ARCH_TYPE or (
         secondary_model.process_method == MDX_ARCH_TYPE and secondary_model.is_mdx_c
     ):
