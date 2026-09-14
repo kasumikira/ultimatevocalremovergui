@@ -6,7 +6,6 @@ import audioread
 import librosa
 import numpy as np
 import pydub
-from scipy import signal
 
 from gui_data.constants import (
     ARM,
@@ -20,14 +19,14 @@ from gui_data.constants import (
 from lib_v5 import spec_utils
 
 
-def prepare_mix(mix):
+def prepare_mix(audio):
     
-    audio_path = mix
+    audio_path = audio
 
-    if not isinstance(mix, np.ndarray):
-        mix, sr = librosa.load(mix, mono=False, sr=44100)
+    if not isinstance(audio, np.ndarray):
+        mix, sr = librosa.load(audio, mono=False, sr=44100)
     else:
-        mix = mix.T
+        mix = audio.T
 
     if isinstance(audio_path, str):
         if not np.any(mix) and audio_path.endswith('.mp3'):
@@ -47,9 +46,9 @@ def rerun_mp3(audio_file, sample_rate=44100):
     return librosa.load(audio_file, duration=track_length, mono=False, sr=sample_rate)[0]
 
 
-def save_format(audio_path, save_format, mp3_bit_set):
+def save_format(audio_path, target_format, mp3_bit_set):
     
-    if not save_format == WAV:
+    if not target_format == WAV:
         
         if OPERATING_SYSTEM == 'Darwin':
             FFMPEG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ffmpeg')
@@ -57,11 +56,11 @@ def save_format(audio_path, save_format, mp3_bit_set):
         
         musfile = pydub.AudioSegment.from_wav(audio_path)
         
-        if save_format == FLAC:
+        if target_format == FLAC:
             audio_path_flac = audio_path.replace(".wav", ".flac")
             musfile.export(audio_path_flac, format="flac")  
         
-        if save_format == MP3:
+        if target_format == MP3:
             audio_path_mp3 = audio_path.replace(".wav", ".mp3")
             try:
                 musfile.export(audio_path_mp3, format="mp3", bitrate=mp3_bit_set, codec="libmp3lame")
@@ -75,21 +74,7 @@ def save_format(audio_path, save_format, mp3_bit_set):
             print(e)
 
 
-def pitch_shift(mix):
-    new_sr = 31183
-
-    # Resample audio file
-    resampled_audio = signal.resample_poly(mix, new_sr, 44100)
-    
-    return resampled_audio
-
-
-def list_to_dictionary(lst):
-    dictionary = {item: index for index, item in enumerate(lst)}
-    return dictionary
-
-
-def loading_mix(X, mp):
+def banded_spectrogram(X, mp):
 
     X_wave, X_spec_s = {}, {}
     
