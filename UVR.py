@@ -53,8 +53,9 @@ from lib_v5 import apollo_inference
 from lib_v5.verify_gpu_availability import *
 from kthread import KThread
 from pathlib  import Path
-from separate import (
-    SeperateDemucs, SeperateMDX, SeperateMDXC, SeperateVR,  # Model-related
+from separation import (
+    RunRequest, RunServices,
+    run_separator,  # Task orchestration
     save_format  # Utility functions
 )
 from playsound import playsound
@@ -3169,9 +3170,8 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         self.mdx_cache_source_mapper = {}
         self.demucs_cache_source_mapper = {}
 
-    def cached_source_callback(self, process_method, model_name=None):
-        
-        model, sources = None, None
+    def load_cached_run(self, process_method, model_name=None):
+        """The result of this file's earlier run of this model, if there is one."""
         
         if process_method == VR_ARCH_TYPE:
             mapper = self.vr_cache_source_mapper
@@ -3180,14 +3180,10 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
         if process_method == DEMUCS_ARCH_TYPE:
             mapper = self.demucs_cache_source_mapper
         
-        for key, value in mapper.items():
-            if model_name in key:
-                model = key
-                sources = value
-        
-        return model, sources
+        return mapper.get(model_name)
 
-    def cached_model_source_holder(self, process_method, sources, model_name=None):
+    def store_cached_run(self, process_method, sources, model_name=None):
+        """Keep one run's result for the next run of the same model in this file."""
         
         if process_method == VR_ARCH_TYPE:
             self.vr_cache_source_mapper = {**self.vr_cache_source_mapper, **{model_name: sources}}
@@ -8819,28 +8815,22 @@ class MainWindow(TkinterDnD.Tk if is_dnd_compatible else tk.Tk):
                         if not os.path.isdir(export_path):
                             os.makedirs(export_path) 
 
-                    process_data = {
-                                    'model_data': current_model, 
-                                    'export_path': export_path,
-                                    'audio_file_base': audio_file_base,
-                                    'audio_file': audio_file,
-                                    'set_progress_bar': set_progress_bar,
-                                    'write_to_console': write_to_console,
-                                    'process_iteration': self.process_iteration,
-                                    'cached_source_callback': self.cached_source_callback,
-                                    'cached_model_source_holder': self.cached_model_source_holder,
-                                    'list_all_models': self.all_models,
-                                    'is_ensemble_master': is_ensemble,
-                                    'is_4_stem_ensemble': True if self.ensemble_main_stem_var.get() in [FOUR_STEM_ENSEMBLE, MULTI_STEM_ENSEMBLE] and is_ensemble else False}
-                    
-                    if current_model.process_method == VR_ARCH_TYPE:
-                        seperator = SeperateVR(current_model, process_data)
-                    if current_model.process_method == MDX_ARCH_TYPE:
-                        seperator = SeperateMDXC(current_model, process_data) if current_model.is_mdx_c else SeperateMDX(current_model, process_data)
-                    if current_model.process_method == DEMUCS_ARCH_TYPE:
-                        seperator = SeperateDemucs(current_model, process_data)
-                        
-                    seperator.seperate()
+                    request = RunRequest(
+                                    audio_file=audio_file,
+                                    export_path=export_path,
+                                    audio_file_base=audio_file_base,
+                                    model=current_model,
+                                    is_ensemble_master=is_ensemble,
+                                    is_4_stem_ensemble=True if self.ensemble_main_stem_var.get() in [FOUR_STEM_ENSEMBLE, MULTI_STEM_ENSEMBLE] and is_ensemble else False)
+                    services = RunServices(
+                                    set_progress_bar=set_progress_bar,
+                                    write_to_console=write_to_console,
+                                    process_iteration=self.process_iteration,
+                                    load_cached_run=self.load_cached_run,
+                                    store_cached_run=self.store_cached_run,
+                                    model_occurrences=self.all_models.count)
+
+                    run_separator(request, services)
                     
                     if is_ensemble:
                         self.command_Text.write('\n')
